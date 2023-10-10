@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Advance&#39;s blog</title>
-    <link>https://advance2020.github.io/</link>
-    <description>Recent content on Advance&#39;s blog</description>
+    <title>学习 on Advance&#39;s blog</title>
+    <link>https://advance2020.github.io/categories/%E5%AD%A6%E4%B9%A0/</link>
+    <description>Recent content in 学习 on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Sun, 13 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://advance2020.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 13 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://advance2020.github.io/categories/%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ML-LOO论文梳理</title>
       <link>https://advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</link>
@@ -20,19 +20,6 @@
 另一类方法是基于扰动的，因此与模型无关。给定一个实例，通过使用预先指定的参考值屏蔽不同的特征组来生成多个扰动样本。实例的特征属性是根据模型对这些样本的预测分数来计算的，包括留一法、LIME和 KernelSHAP。
 观察结果表明，特征归因的敏感性可能源于模型的敏感性，而不是归因方法。这激发了本文通过归因方法检测对抗样本。
 对抗攻击 对抗攻击试图以最小的扰动改变给定模型对原始实例的预测，从而产生对抗样本。对抗样本可以分为有针对性的或无针对性的，具体取决于目标是将受到干扰的实例分类为给定的目标类还是与正确类不同的任意类。攻击还因用于表征最小扰动的距离类型而异。 ∞、0 和 2 距离是最常用的距离。 Goodfellow、Shlens 和 Szegedy 提出的快速梯度符号法 (FGSM) 是一种最小化 ∞ 距离的有效方法。 Kurakin、Goodfellow、Bengio 和 Madry 等人提出了 ∞-PGD (BIM)，它是 FGSM 的迭代版本，它以更小的扰动实现了更高的成功率。 Moosavi-Dezfooli、Fawzi 和 Frossard 提出的 DeepFool 通过迭代线性化过程最小化 2 距离。 Carlini 和 Wagner 提出了有效的算法来为这三个距离中的每一个生成对抗样本。特别是，Carlini 和 Wagner 提出了一种能够控制对抗样本置信度的损失函数。 (Papernot et al. 2016a) 提出的基于雅可比行列式的显着图攻击 (JSMA) 是一种用于 0 度量扰动的贪婪方法。最近，出现了几种仅依赖于概率分数或决策的黑盒对抗性攻击。 Ilyas、Engstrom 和 Madry 引入了基于分数的方法，使用零阶梯度估计来制作对抗样本。 Brendel、Rauber 和 Bethge 引入了边界攻击，作为一种最小化 2 距离的黑盒方法，不需要访问梯度信息，仅依赖于模型决策。</description>
-    </item>
-    
-    <item>
-      <title>凌晨三点的指尖</title>
-      <link>https://advance2020.github.io/posts/random/cn/</link>
-      <pubDate>Wed, 09 Aug 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://advance2020.github.io/posts/random/cn/</guid>
-      <description>梦魇缠身 vs 惨遭误伤 凌晨一点追完品质好剧《做自己的光》大结局，我俩才慢悠悠躺床上，却都毫无睡意。玩闹了半晌，才终于舍得放下手机，做出入睡的架势。奈何29℃的空调如何是懂让人浑身湿答答的，两人轮流下床调了几回，终于差强人意，才开始用此起彼伏舒缓的鼾声来宣告夜晚的静谧。
-熟睡着，忽然胸口一阵疼痛，猛地睁眼，看见身旁的半个人影梦呓着坐将起来，一个支撑个大半个身子的手肘就这样压着我的胸口不断往下坠，疼的我啊啊地叫出声来。
-“我做噩梦了😫” 身旁人梦魇中惊醒，余悸仍未消，开始颤抖起来。我疼的不想呼吸，又想到莫名挨痛，一肚子闷气。再加上白天又喝了一杯瑞幸，脑袋是嘎嘎清醒了，睡不着，翻来覆去了一会儿，下床继续弄起了下午未竣工的宝贝网站。
-修改这个配置，撰写那个文档，指尖在清脆的伴奏下翩然起舞，这方小小天地终于闪露出了星微光亮，指尖却舞得更加热烈，迫不及待地完成了首篇“文章”，满足！回去补补觉，又是进步的一天呐！
-PS: 我寻思着早就想给某人准备的捕梦网应该要提上日程了，把扰人的恶梦通通困在网中，并随着次日的阳光灰飞烟灭，消失得无影无踪……</description>
     </item>
     
   </channel>
