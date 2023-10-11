@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技巧 on Advance&#39;s blog</title>
+    <link>https://Advance2020.github.io/categories/%E6%8A%80%E5%B7%A7/</link>
+    <description>Recent content in 技巧 on Advance&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>cn</language>
+    <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/categories/%E6%8A%80%E5%B7%A7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>博客更新&amp;&amp;Git认证</title>
+      <link>https://Advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</link>
+      <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</guid>
+      <description>一、博客更新常用命令 废柴小白刚上手老是记不住哇，好记性不如烂笔头，把常用命令放下面，下次就好找啦^0^ （哼，看我用的多了还记不住你！！！
+git add . git commit -m &amp;#34;mmmmm&amp;#34; git remote add origin git push -u origin matser 二、Git认证 这次push总是提交失败，各种问题（time out、reset、denied）全碰了一遍，真是不疯魔不成活。踩完各种雷，还是想整理整理，说不定下次还要踩。
+使用令牌登录 不要使用用户名密码，git已经改了。去github-settings-Developer settings生成Tokens(classic)。划重点，生成令牌一定要勾选各种权限，不然就等着Permission denied!
+常用命令 执行这个命令之后，可以重新写入账号令牌 git config --system --unset credential.helper 配置为缓存密码 之后的操作就不需要输入密码了。 git config --global credential.helper store 使用下面命令清除使用密码缓存的配置 git config --local --unset credential.helper git config --global --unset credential.helper git config --system --unset credential.helper PS: 令牌会过期，到时候重新生成一个就好。</description>
+    </item>
+    
+  </channel>
+</rss>
