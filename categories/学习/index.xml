@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>学习 on Advance&#39;s blog</title>
-    <link>https://advance2020.github.io/categories/%E5%AD%A6%E4%B9%A0/</link>
+    <link>https://Advance2020.github.io/categories/%E5%AD%A6%E4%B9%A0/</link>
     <description>Recent content in 学习 on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Sun, 13 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://advance2020.github.io/categories/%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 13 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/categories/%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ML-LOO论文梳理</title>
-      <link>https://advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</link>
+      <link>https://Advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</link>
       <pubDate>Sun, 13 Aug 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</guid>
+      <guid>https://Advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</guid>
       <description>使用特征归因检测对抗样本 Abstract 通过对特征归因得分的尺度估计进行阈值化进行对抗样本的检测 采取多层特征归因应对具有混合置信度的攻击 在攻击者可以完全访问分类器的情况下依然保持较好的检测效果 1.Introduction 虽然一系列工作试图解释为什么存在对抗样本，但尚未对根本原因进行全面分析，这主要是因为深层原因神经网络具有复杂的函数形式，因此很难获得数学特征。另一方面，特征归因是一种被广泛研究解决神经网络黑盒性质的方法：给定一个预测模型，对每个输入实例输出一个与底层特征相关的重要性得分向量。特征归因已被用来提高机器学习模型的透明度和公平性。
 本文研究了特征归因在检测对抗样本中的应用。观察到边界附近的对抗样本的特征归因图总是与相应的原始示例的特征归因图不同。图 1 显示了一个激励示例，它演示了将 CIFAR-10 中的图像输入残差神经网络以及留一法 (LOO) 的相应特征归因。后者通过观察在 C&amp;amp;W 攻击的最坏情况扰动之前和之后擦除输入的每个像素对模型的影响来解释神经模型的决策。虽然原始图像上的扰动在视觉上难以察觉，但特征属性却发生了巨大的变化。进一步观察到，这种差异可以通过描述特征不一致的简单统计来概括，这些统计能够区分对抗样本和自然图像。推测这是因为对抗样本往往会将样本扰乱到决策面上的不稳定区域。
 上述观察产生了一种检测决策边界附近的对抗样本的有效方法。另一方面，也存在模型具有高置信度的对抗样本。还观察到一个有趣的现象：即使对于高置信度的对抗样本，神经网络的中间层仍然包含不确定性信息。基于这一观察，将不稳定方法推广到合并多层特征归因，其中计算中间层的归因分数而不会产生额外的模型查询。
