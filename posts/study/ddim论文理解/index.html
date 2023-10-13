@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.117.0">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Advance" />
+  <meta property="og:url" content="https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" />
+  <link rel="canonical" href="https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" /><link rel="alternate" type="application/atom+xml" href="https://Advance2020.github.ioindex.xml" title="Advance&#39;s blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/Advance2020.github.io"
+      },
+      "articleSection" : "posts",
+      "name" : "DDIM论文理解",
+      "headline" : "DDIM论文理解",
+      "description" : "一、论文简介 DENOISING DIFFUSION IMPLICIT MODELS\n会议来源：ICLR 文章年限：2021\n核心思路：在DDPM(DENOISING DIFFUSION probabilistic MODEL)的启发下，用非马尔可夫过程改变生成过程，不用一步一步去噪，从而能够更快地产生高质量样本。\n二、论文理解 1. 背景与目的 已经有多种模型都在图片生成上展示出了或多或少的优势。其中GAN比基于似然的模型如变分自动编码器、自回归模型表现出更高的样本质量。但是同时，GAN也具有一些不可忽视的缺点：训练过程不稳定；在某些情况下，GAN可能会遇到模式崩溃，导致生成的样本质量下降。\n针对这一不足，基于马尔可夫链的迭代生成模型应运而生，如DDPM和噪声条件评分模型，它们不需要对抗训练，也同样可以生成较好质量的样本。但是同样也存在一个关键的缺点——迭代次数多，生成样本的速度慢。\n为了提高采样速度，在DDPM的启发下，在损失目标函数相同的情况下，作出了相应的改进，提出了DDIM。DDIM相较于DDPM的优点：\n在保证提高10到50倍的采样速度的同时，有更高的生成质量 有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。 利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值 2. 核心方法 以生成过程为切入点，一个关键的观察结果是，Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。 由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。 2.1 非马尔可夫链的前向过程 推理分布族 Q： 其中 qσ (xT |x0) = N (√αT x0, (1 − αT )I)且t\u0026gt;1， 由贝叶斯公式可以得出： 这里每个 xt 都可以依赖于 xt−1 和 x0，因此前向过程不再是马尔可夫的。 当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）\n2.2 生成过程和统一变分推理目标 （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，σ 的大小控制着前向过程的随机性；先由给定的xt 预测出x0(见公式9) 然后得到生成过程 通过样本 xt 生成样本 xt−1： 通过改变σ 的可以改变生成过程，当σt = √(1 − αt−1)\/(1 − αt)√1 − αt\/αt−1时，就是马尔可夫链的DDPM。（！！！公式推理）",
+      "inLanguage" : "en-US",
+      "author" : "Advance",
+      "creator" : "Advance",
+      "publisher": "Advance",
+      "accountablePerson" : "Advance",
+      "copyrightHolder" : "Advance",
+      "copyrightYear" : "2023",
+      "datePublished": "2023-10-13 00:00:00 \u002b0000 UTC",
+      "dateModified" : "2023-10-13 00:00:00 \u002b0000 UTC",
+      "url" : "https:\/\/Advance2020.github.io\/posts\/study\/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>DDIM论文理解</title>
+  <meta property="og:title" content="DDIM论文理解" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="一、论文简介 DENOISING DIFFUSION IMPLICIT MODELS
+会议来源：ICLR 文章年限：2021
+核心思路：在DDPM(DENOISING DIFFUSION probabilistic MODEL)的启发下，用非马尔可夫过程改变生成过程，不用一步一步去噪，从而能够更快地产生高质量样本。
+二、论文理解 1. 背景与目的 已经有多种模型都在图片生成上展示出了或多或少的优势。其中GAN比基于似然的模型如变分自动编码器、自回归模型表现出更高的样本质量。但是同时，GAN也具有一些不可忽视的缺点：训练过程不稳定；在某些情况下，GAN可能会遇到模式崩溃，导致生成的样本质量下降。
+针对这一不足，基于马尔可夫链的迭代生成模型应运而生，如DDPM和噪声条件评分模型，它们不需要对抗训练，也同样可以生成较好质量的样本。但是同样也存在一个关键的缺点——迭代次数多，生成样本的速度慢。
+为了提高采样速度，在DDPM的启发下，在损失目标函数相同的情况下，作出了相应的改进，提出了DDIM。DDIM相较于DDPM的优点：
+在保证提高10到50倍的采样速度的同时，有更高的生成质量 有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。 利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值 2. 核心方法 以生成过程为切入点，一个关键的观察结果是，Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。 由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。 2.1 非马尔可夫链的前向过程 推理分布族 Q： 其中 qσ (xT |x0) = N (√αT x0, (1 − αT )I)且t&amp;gt;1， 由贝叶斯公式可以得出： 这里每个 xt 都可以依赖于 xt−1 和 x0，因此前向过程不再是马尔可夫的。 当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）
+2.2 生成过程和统一变分推理目标 （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，σ 的大小控制着前向过程的随机性；先由给定的xt 预测出x0(见公式9) 然后得到生成过程 通过样本 xt 生成样本 xt−1： 通过改变σ 的可以改变生成过程，当σt = √(1 − αt−1)/(1 − αt)√1 − αt/αt−1时，就是马尔可夫链的DDPM。（！！！公式推理）" />
+  <meta name="description" content="一、论文简介 DENOISING DIFFUSION IMPLICIT MODELS
+会议来源：ICLR 文章年限：2021
+核心思路：在DDPM(DENOISING DIFFUSION probabilistic MODEL)的启发下，用非马尔可夫过程改变生成过程，不用一步一步去噪，从而能够更快地产生高质量样本。
+二、论文理解 1. 背景与目的 已经有多种模型都在图片生成上展示出了或多或少的优势。其中GAN比基于似然的模型如变分自动编码器、自回归模型表现出更高的样本质量。但是同时，GAN也具有一些不可忽视的缺点：训练过程不稳定；在某些情况下，GAN可能会遇到模式崩溃，导致生成的样本质量下降。
+针对这一不足，基于马尔可夫链的迭代生成模型应运而生，如DDPM和噪声条件评分模型，它们不需要对抗训练，也同样可以生成较好质量的样本。但是同样也存在一个关键的缺点——迭代次数多，生成样本的速度慢。
+为了提高采样速度，在DDPM的启发下，在损失目标函数相同的情况下，作出了相应的改进，提出了DDIM。DDIM相较于DDPM的优点：
+在保证提高10到50倍的采样速度的同时，有更高的生成质量 有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。 利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值 2. 核心方法 以生成过程为切入点，一个关键的观察结果是，Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。 由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。 2.1 非马尔可夫链的前向过程 推理分布族 Q： 其中 qσ (xT |x0) = N (√αT x0, (1 − αT )I)且t&amp;gt;1， 由贝叶斯公式可以得出： 这里每个 xt 都可以依赖于 xt−1 和 x0，因此前向过程不再是马尔可夫的。 当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）
+2.2 生成过程和统一变分推理目标 （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，σ 的大小控制着前向过程的随机性；先由给定的xt 预测出x0(见公式9) 然后得到生成过程 通过样本 xt 生成样本 xt−1： 通过改变σ 的可以改变生成过程，当σt = √(1 − αt−1)/(1 − αt)√1 − αt/αt−1时，就是马尔可夫链的DDPM。（！！！公式推理）" />
+  <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
+  
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body blockquote{margin:0;padding:0 1em;color:#57606a;border-left:.25em solid #d0d7de}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;background-color:inherit;border:0}.Chinese .markdown-body{line-height:200%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.8;text-justify:ideographic;margin-bottom:1em}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{text-align:center}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Advance&#39;s blog">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="header-title">
+    <a href="/"
+      >Advance Yang</a
+    >
+  </div>
+  <div class="header-subtitle">吾生也有涯，而知也无涯。</div>
+</header>
+<div class="row end-md center-xs header-items">
+  
+  <div class="header-item">
+    <a href="https://user.qzone.qq.com/2167506238/infocenter" target="_blank">QZone</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="https://github.com/Advance2020" target="_blank">Github</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="" target="_blank">About</a>
+  </div>
+  
+</div>
+<div class="row end-xs">
+   
+  <div class="lang-switch col-xs-3 col-xs-offset-9">
+    <a href="/en/">English</a>
+  </div>
+   
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">DDIM论文理解</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2023-10-13 00:00:00 UTC">
+                13 Oct 2023
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://advance2020.github.io/">@Advance</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <h2 id="__一论文简介__"><strong>一、论文简介</strong></h2>
+<p><strong>DENOISING DIFFUSION IMPLICIT MODELS</strong></p>
+<p><em>会议来源</em>：ICLR   <em>文章年限</em>：2021</p>
+<p><em>核心思路</em>：在DDPM(DENOISING DIFFUSION probabilistic MODEL)的启发下，用非马尔可夫过程改变生成过程，不用一步一步去噪，从而能够更快地产生高质量样本。</p>
+<h2 id="__二论文理解__"><strong>二、论文理解</strong></h2>
+<h3 id="1-背景与目的"><strong>1. 背景与目的</strong></h3>
+<p>  已经有多种模型都在图片生成上展示出了或多或少的优势。其中GAN比基于似然的模型如变分自动编码器、自回归模型表现出更高的样本质量。但是同时，GAN也具有一些不可忽视的缺点：训练过程不稳定；在某些情况下，GAN可能会遇到模式崩溃，导致生成的样本质量下降。</p>
+<p>  针对这一不足，基于马尔可夫链的迭代生成模型应运而生，如DDPM和噪声条件评分模型，它们不需要对抗训练，也同样可以生成较好质量的样本。但是同样也存在一个关键的缺点——迭代次数多，生成样本的速度慢。</p>
+<p>  为了提高采样速度，在DDPM的启发下，在损失目标函数相同的情况下，作出了相应的改进，提出了DDIM。DDIM相较于DDPM的优点：</p>
+<ul>
+<li>在保证提高10到50倍的采样速度的同时，有更高的生成质量</li>
+<li>有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。</li>
+<li>利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值</li>
+</ul>
+<h3 id="2-核心方法"><strong>2. 核心方法</strong></h3>
+<p><img src="/img/DDIM/figure.png" alt="">
+  以生成过程为切入点，一个关键的观察结果是，<u><strong>Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。</strong></u>由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。
+  由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。
+<img src="/img/DDIM/figure1.png" alt=""></p>
+<h4 id="21-非马尔可夫链的前向过程">2.1 非马尔可夫链的前向过程</h4>
+<p>  推理分布族 Q：
+<img src="/img/DDIM/figure2.png" alt="">
+其中 qσ (xT |x0) = N (√αT x0, (1 − αT )I)且t&gt;1，
+<img src="/img/DDIM/figure3.png" alt="">
+  由贝叶斯公式可以得出：
+<img src="/img/DDIM/figure4.png" alt=""></p>
+<p>  这里<u>每个 xt 都可以依赖于 xt−1 和 x0</u>，因此前向过程不再是马尔可夫的。
+当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）</p>
+<h4 id="22-生成过程和统一变分推理目标">2.2 生成过程和统一变分推理目标</h4>
+<p>  （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，<u><strong>σ 的大小控制着前向过程的随机性</strong></u>；先由给定的xt 预测出x0(见公式9)
+<img src="/img/DDIM/figure5.png" alt="">
+然后得到生成过程
+<img src="/img/DDIM/figure6.png" alt=""></p>
+<p>  通过样本 xt 生成样本 xt−1：
+<img src="/img/DDIM/figure9.png" alt="">
+通过改变σ 的可以改变生成过程，当σt = √(1 − αt−1)/(1 − αt)√1 − αt/αt−1时，就是马尔可夫链的DDPM。（！！！公式推理）</p>
+<p>当σt = 0时，即随机噪声t之前的系数变为零，则样本是通过固定过程（从 xT 到 x0）从潜在变量生成的。（！！！公式推理）</p>
+<p>  （2）噪声预测中θ的优化：
+<img src="/img/DDIM/figure7.png" alt="">
+变形基于如下公式：
+<img src="/img/DDIM/figure2.png" alt="">  <img src="/img/DDIM/figure8.png" alt=""></p>
+<p>  （3）目标函数的等价：</p>
+<p>对于所有 σ &gt; 0，存在 γ ε RT &gt;0 且 C ε R，使得 Jσ = Lγ + C</p>
+<p>  作者指出：变分目标 Lγ 的特殊之处在于，如果<u><strong>模型 (t) 的参数 θ 不在不同 t之间共享，则 θ 的最优解将不依赖于权重 γ</strong></u>(γ := [γ1, . 。 。 , γT ] 是目标中取决于 α1:T 的正系数向量)。Lγ 的这一性质有两个含义。一方面，这证明了使用 L1 作为 DDPM 变分下界的替代目标函数是合理的；另一方面，由于Jσ与定理1中的某个Lγ等价，因此Jσ的最优解也与L1的最优解相同。因此，如果模型 θ 中的参数不跨 t 共享，则在DDPM中使用的 L1 也可以用作变分目标 Jσ 的替代目标函数。</p>
+<p>  另外，有提到与 NEURAL ODES的联系。查阅了解到，Neural ODE（Neural Ordinary Differential Equations，神经常微分方程）是一种基于常微分方程的深度学习方法，它结合了传统的ODE数值求解技术和神经网络模型。</p>
+<p><em>PS：τ用于控制获取样本的速度； σ用于在确定性 DDIM 和随机 DDPM 之间插值。</em></p>
+<h3 id="三优点及支撑"><strong>三、优点及支撑</strong></h3>
+<p>  主要与DDPM相比：</p>
+<ol>
+<li><strong>质量与效率</strong>——当考虑较少的迭代时，DDIM 在图像生成方面优于 DDPM，与原始 DDPM 生成过程相比，速度提高了 10 倍到 100 倍。</li>
+</ol>
+<p>  下表展示了在数据集CIFAR10 和 CelebA 上，改变用于生成样本的时间步数 (dim(τ )) 和过程的随机性 (η)，得到的图像的质量。（实际是在图像质量与计算成本之间trade-off）：
+<img src="/img/DDIM/figure10.png" alt="">
+  可以看到当时间步长较小时，DDIM (η = 0) 实现了最佳样本质量，而在具有相同时间步长时，DDPM (η = 1 和 ˆσ) 与随机性较小的对应样本相比，表现较差。从上表也可以看到在 CelebA 上，100 步 DDPM 的 FID 分数与 20 步 DDIM 相似。</p>
+<p>  下图也证明了随机性越大，图片质量越差。
+<img src="/img/DDIM/figure11.png" alt=""></p>
+<p>  DDIM 能够在 20 到 100 个步骤内生成质量与 1000 个步骤模型相当的样本，与原始 DDPM 相比，速度提高了 10 到 50 倍。
+<img src="/img/DDIM/figure12.png" alt=""></p>
+<ol start="2">
+<li>
+<p><strong>具有“一致性”属性</strong>——一旦初始潜在变量 xT 固定，无论生成轨迹如何，DDIM 都会保留高级图像特征，因此它们能够直接从潜在空间执行插值。
+<img src="/img/DDIM/figure13.png" alt="">
+  在许多情况下，仅 20 步骤生成的样本在高级特征方面就已经与 1000 步骤生成的样本非常相似，只有细节上的微小差异。<strong>合理推论： xT是图像的信息性潜在编码，而参数是影响图像质量的细节性编码。</strong>
+<img src="/img/DDIM/figure14.png" alt="">
+  上图表明 xT 中的简单插值可以在两个样本之间产生语义上有意义的插值</p>
+</li>
+<li>
+<p><strong>低的重建误差</strong>——对样本进行编码，然后从潜在编码中重建样本，而 DDPM 由于随机采样过程而无法做到这一点，与OEDs部分相关。
+<img src="/img/DDIM/figure15.png" alt="">
+  可以看到DDIM 具有较低的重建误差，并且具有类似于神经常微分方程和归一化流的属性。</p>
+</li>
+</ol>
+<p><em>PS：FID用于衡量两组图像的相似度，是计算真实图像和生成图像的特征向量之间距离的一种度量。FID 在最佳情况下的得分为 0.0，表示两组图像相同。分数越低代表两组图像越相似，或者说二者的统计量越相似。</em></p>
+<h3 id="四未来工作与不足"><strong>四、未来工作与不足</strong></h3>
+<p>  <strong>未来工作</strong>：1. 原则上，根据DDIM，可以训练具有任意数量的前向步骤的模型，而仅在生成过程中从其中的一些步骤中进行采样。因此，训练后的模型可以允许更多的扩散步骤。这方面的实证研究留作未来的工作。</p>
+<ol start="2">
+<li>
+<p>由于 DDIM 的采样过程与神经 ODE 的采样过程类似，因此看看是否有减少 ODE 中离散化误差的方法。</p>
+</li>
+<li>
+<p>研究 DDIM 是否表现出现有隐式模型的其他属性。
+  <strong>不足</strong>：在小图像的数据集上表现很好，但在大图像上呢？</p>
+</li>
+</ol>
+
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
+          </div>
+
+          
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

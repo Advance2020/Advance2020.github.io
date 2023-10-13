@@ -6,14 +6,31 @@
     <description>Recent content on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DDIM论文理解</title>
+      <link>https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</guid>
+      <description>一、论文简介 DENOISING DIFFUSION IMPLICIT MODELS
+会议来源：ICLR 文章年限：2021
+核心思路：在DDPM(DENOISING DIFFUSION probabilistic MODEL)的启发下，用非马尔可夫过程改变生成过程，不用一步一步去噪，从而能够更快地产生高质量样本。
+二、论文理解 1. 背景与目的 已经有多种模型都在图片生成上展示出了或多或少的优势。其中GAN比基于似然的模型如变分自动编码器、自回归模型表现出更高的样本质量。但是同时，GAN也具有一些不可忽视的缺点：训练过程不稳定；在某些情况下，GAN可能会遇到模式崩溃，导致生成的样本质量下降。
+针对这一不足，基于马尔可夫链的迭代生成模型应运而生，如DDPM和噪声条件评分模型，它们不需要对抗训练，也同样可以生成较好质量的样本。但是同样也存在一个关键的缺点——迭代次数多，生成样本的速度慢。
+为了提高采样速度，在DDPM的启发下，在损失目标函数相同的情况下，作出了相应的改进，提出了DDIM。DDIM相较于DDPM的优点：
+在保证提高10到50倍的采样速度的同时，有更高的生成质量 有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。 利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值 2. 核心方法 以生成过程为切入点，一个关键的观察结果是，Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。 由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。 2.1 非马尔可夫链的前向过程 推理分布族 Q： 其中 qσ (xT |x0) = N (√αT x0, (1 − αT )I)且t&amp;gt;1， 由贝叶斯公式可以得出： 这里每个 xt 都可以依赖于 xt−1 和 x0，因此前向过程不再是马尔可夫的。 当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）
+2.2 生成过程和统一变分推理目标 （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，σ 的大小控制着前向过程的随机性；先由给定的xt 预测出x0(见公式9) 然后得到生成过程 通过样本 xt 生成样本 xt−1： 通过改变σ 的可以改变生成过程，当σt = √(1 − αt−1)/(1 − αt)√1 − αt/αt−1时，就是马尔可夫链的DDPM。（！！！公式推理）</description>
+    </item>
+    
     <item>
       <title>博客更新&amp;&amp;Git认证</title>
       <link>https://Advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</link>
       <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
       
       <guid>https://Advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</guid>
-      <description>一、博客更新常用命令 废柴小白刚上手老是记不住哇，好记性不如烂笔头，把常用命令放下面，下次就好找啦^0^ （哼，看我用的多了还记不住你！！！
+      <description>一、博客更新常用命令 废柴小白刚上手老是记不住哇，好记性不如烂笔头，把常用命令放下面，下次就好找啦^0^ （哼，看我用的多了还记不住你！！！ 首先打开cmd，输入以下命令
+hugo --theme=yinyang --baseURL=&amp;#34;https://Advance2020.github.io&amp;#34; --buildDrafts 然后进入Public文件夹，打开git:
 git add . git commit -m &amp;#34;mmmmm&amp;#34; git push -u origin matser 二、Git认证 这次push总是提交失败，各种问题（time out、reset、denied）全碰了一遍，真是不疯魔不成活。踩完各种雷，还是想整理整理，说不定下次还要踩。
 使用令牌登录 不要使用用户名密码，git已经改了。去github-settings-Developer settings生成Tokens(classic)。划重点，生成令牌一定要勾选各种权限，不然就等着Permission denied!
 常用命令 执行这个命令之后，可以重新写入账号令牌 git config --system --unset credential.helper 配置为缓存密码 之后的操作就不需要输入密码了。 git config --global credential.helper store 使用下面命令清除使用密码缓存的配置 git config --local --unset credential.helper git config --global --unset credential.helper git config --system --unset credential.helper PS: 令牌会过期，到时候重新生成一个就好。</description>
