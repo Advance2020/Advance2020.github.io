@@ -6,7 +6,25 @@
     <description>Recent content in Posts on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>深度学习基础笔记</title>
+      <link>https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</guid>
+      <description>一、理解variance 与 bias varivance：反映准确率 bias:反映模型的拟合能力
+高方差（variance）—— 过拟合 —— 训练集上表现好，验证集上表现差 高偏差（bias）—— 欠拟合 —— 训练集上表现就比较差 解决方法：对于high bias，增加模型复杂度，训练一个更大的网络；对于high variance，增加训练数据；采用正则化的方法
+二、NCHW与NHWC数据格式 (1) 基本概念
+深度学习框架中，数据一般是4D，用NCHW或NHWC表达，其中：
+N - Batch C - Channel H - Height W - Width (2)逻辑表达
+假定N = 2，C = 16，H = 5，W = 4，那么这个4D数据，看起来是这样的： 我们比较直接的理解方式是3D，上图中从三个方向上理解，C方向/H方向/W方向。再加N方向上，就是4D。上图中红色标准的数值是这个数据里每个元素的数值。
+(3)逻辑表达
+无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持
+目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:
+TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 </description>
+    </item>
+    
     <item>
       <title>DDIM论文理解</title>
       <link>https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</link>
