@@ -2,17 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Advance&#39;s blog</title>
-    <link>https://Advance2020.github.io/posts/</link>
+    <link>https://advance2020.github.io/posts/</link>
     <description>Recent content in Posts on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Wed, 15 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 27 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://advance2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DDPM代码详解</title>
+      <link>https://advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</guid>
+      <description>1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
+从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0+\sqrt{(1-\bar{\alpha_t}\epsilon_t)},t)$ 计算噪声之间的MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0+\sqrt(1-\bar \alpha_t)\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
+从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}} \cdot\beta_t$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
+Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
+以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
+def train(self, evaluator=None, chkpt_path=None, image_dir=None): #无关代码已省略 #...... global_steps = 0 for e in range(self.</description>
+    </item>
+    
     <item>
       <title>深度学习基础笔记</title>
-      <link>https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</link>
+      <link>https://advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</guid>
+      <guid>https://advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</guid>
       <description>一、理解variance 与 bias varivance：反映准确率 bias:反映模型的拟合能力
 高方差（variance）—— 过拟合 —— 训练集上表现好，验证集上表现差 高偏差（bias）—— 欠拟合 —— 训练集上表现就比较差 解决方法：对于high bias，增加模型复杂度，训练一个更大的网络；对于high variance，增加训练数据；采用正则化的方法
 二、NCHW与NHWC数据格式 (1) 基本概念
@@ -22,15 +36,15 @@ N - Batch C - Channel H - Height W - Width (2)逻辑表达
 (3)逻辑表达
 无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持
 目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:
-TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 </description>
+TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 四、持续更新中。。。 </description>
     </item>
     
     <item>
       <title>DDIM论文理解</title>
-      <link>https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</link>
+      <link>https://advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</link>
       <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://Advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</guid>
+      <guid>https://advance2020.github.io/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</guid>
       <description>一、论文简介 DENOISING DIFFUSION IMPLICIT MODELS
 会议来源：ICLR 文章年限：2021
 核心思路：在DDPM(DENOISING DIFFUSION probabilistic MODEL)的启发下，用非马尔可夫过程改变生成过程，不用一步一步去噪，从而能够更快地产生高质量样本。
@@ -43,10 +57,10 @@ TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小
     
     <item>
       <title>博客更新&amp;&amp;Git认证</title>
-      <link>https://Advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</link>
+      <link>https://advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</link>
       <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://Advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</guid>
+      <guid>https://advance2020.github.io/posts/tips/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0git%E8%AE%A4%E8%AF%81/</guid>
       <description>一、博客更新常用命令 废柴小白刚上手老是记不住哇，好记性不如烂笔头，把常用命令放下面，下次就好找啦^0^ （哼，看我用的多了还记不住你！！！ 首先打开cmd，输入以下命令
 hugo --theme=yinyang --baseURL=&amp;#34;https://Advance2020.github.io&amp;#34; --buildDrafts 然后进入Public文件夹，打开git:
 git add . git commit -m &amp;#34;mmmmm&amp;#34; git push -u origin matser 二、Git认证 这次push总是提交失败，各种问题（time out、reset、denied）全碰了一遍，真是不疯魔不成活。踩完各种雷，还是想整理整理，说不定下次还要踩。
@@ -56,10 +70,10 @@ git add . git commit -m &amp;#34;mmmmm&amp;#34; git push -u origin matser 二、
     
     <item>
       <title>ML-LOO论文梳理</title>
-      <link>https://Advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</link>
+      <link>https://advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</link>
       <pubDate>Sun, 13 Aug 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://Advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</guid>
+      <guid>https://advance2020.github.io/posts/study/ml-loo%E8%AE%BA%E6%96%87%E6%A2%B3%E7%90%86/</guid>
       <description>使用特征归因检测对抗样本 Abstract 通过对特征归因得分的尺度估计进行阈值化进行对抗样本的检测 采取多层特征归因应对具有混合置信度的攻击 在攻击者可以完全访问分类器的情况下依然保持较好的检测效果 1.Introduction 虽然一系列工作试图解释为什么存在对抗样本，但尚未对根本原因进行全面分析，这主要是因为深层原因神经网络具有复杂的函数形式，因此很难获得数学特征。另一方面，特征归因是一种被广泛研究解决神经网络黑盒性质的方法：给定一个预测模型，对每个输入实例输出一个与底层特征相关的重要性得分向量。特征归因已被用来提高机器学习模型的透明度和公平性。
 本文研究了特征归因在检测对抗样本中的应用。观察到边界附近的对抗样本的特征归因图总是与相应的原始示例的特征归因图不同。图 1 显示了一个激励示例，它演示了将 CIFAR-10 中的图像输入残差神经网络以及留一法 (LOO) 的相应特征归因。后者通过观察在 C&amp;amp;W 攻击的最坏情况扰动之前和之后擦除输入的每个像素对模型的影响来解释神经模型的决策。虽然原始图像上的扰动在视觉上难以察觉，但特征属性却发生了巨大的变化。进一步观察到，这种差异可以通过描述特征不一致的简单统计来概括，这些统计能够区分对抗样本和自然图像。推测这是因为对抗样本往往会将样本扰乱到决策面上的不稳定区域。
 上述观察产生了一种检测决策边界附近的对抗样本的有效方法。另一方面，也存在模型具有高置信度的对抗样本。还观察到一个有趣的现象：即使对于高置信度的对抗样本，神经网络的中间层仍然包含不确定性信息。基于这一观察，将不稳定方法推广到合并多层特征归因，其中计算中间层的归因分数而不会产生额外的模型查询。
@@ -71,10 +85,10 @@ git add . git commit -m &amp;#34;mmmmm&amp;#34; git push -u origin matser 二、
     
     <item>
       <title>凌晨三点的指尖</title>
-      <link>https://Advance2020.github.io/posts/random/cn/</link>
+      <link>https://advance2020.github.io/posts/random/cn/</link>
       <pubDate>Wed, 09 Aug 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://Advance2020.github.io/posts/random/cn/</guid>
+      <guid>https://advance2020.github.io/posts/random/cn/</guid>
       <description>梦魇缠身 vs 惨遭误伤 凌晨一点追完品质好剧《做自己的光》大结局，我俩才慢悠悠躺床上，却都毫无睡意。玩闹了半晌，才终于舍得放下手机，做出入睡的架势。奈何29℃的空调如何是懂让人浑身湿答答的，两人轮流下床调了几回，终于差强人意，才开始用此起彼伏舒缓的鼾声来宣告夜晚的静谧。
 熟睡着，忽然胸口一阵疼痛，猛地睁眼，看见身旁的半个人影梦呓着坐将起来，一个支撑个大半个身子的手肘就这样压着我的胸口不断往下坠，疼的我啊啊地叫出声来。
 “我做噩梦了😫” 身旁人梦魇中惊醒，余悸仍未消，开始颤抖起来。我疼的不想呼吸，又想到莫名挨痛，一肚子闷气。再加上白天又喝了一杯瑞幸，脑袋是嘎嘎清醒了，睡不着，翻来覆去了一会儿，下床继续弄起了下午未竣工的宝贝网站。

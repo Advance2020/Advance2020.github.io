@@ -7,8 +7,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="Advance" />
-  <meta property="og:url" content="https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/" />
-  <link rel="canonical" href="https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/" /><link rel="alternate" type="application/atom+xml" href="https://Advance2020.github.ioindex.xml" title="Advance&#39;s blog">
+  <meta property="og:url" content="https://advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/" />
+  <link rel="canonical" href="https://advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/" /><link rel="alternate" type="application/atom+xml" href="https://advance2020.github.io/index.xml" title="Advance&#39;s blog">
 
   <script type="application/ld+json">
   {
@@ -16,12 +16,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/Advance2020.github.io"
+           "@id": "https:\/\/advance2020.github.io\/"
       },
       "articleSection" : "posts",
       "name" : "深度学习基础笔记",
       "headline" : "深度学习基础笔记",
-      "description" : "一、理解variance 与 bias varivance：反映准确率 bias:反映模型的拟合能力\n高方差（variance）—— 过拟合 —— 训练集上表现好，验证集上表现差 高偏差（bias）—— 欠拟合 —— 训练集上表现就比较差 解决方法：对于high bias，增加模型复杂度，训练一个更大的网络；对于high variance，增加训练数据；采用正则化的方法\n二、NCHW与NHWC数据格式 (1) 基本概念\n深度学习框架中，数据一般是4D，用NCHW或NHWC表达，其中：\nN - Batch C - Channel H - Height W - Width (2)逻辑表达\n假定N = 2，C = 16，H = 5，W = 4，那么这个4D数据，看起来是这样的： 我们比较直接的理解方式是3D，上图中从三个方向上理解，C方向\/H方向\/W方向。再加N方向上，就是4D。上图中红色标准的数值是这个数据里每个元素的数值。\n(3)逻辑表达\n无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持\n目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:\nTensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 ",
+      "description" : "一、理解variance 与 bias varivance：反映准确率 bias:反映模型的拟合能力\n高方差（variance）—— 过拟合 —— 训练集上表现好，验证集上表现差 高偏差（bias）—— 欠拟合 —— 训练集上表现就比较差 解决方法：对于high bias，增加模型复杂度，训练一个更大的网络；对于high variance，增加训练数据；采用正则化的方法\n二、NCHW与NHWC数据格式 (1) 基本概念\n深度学习框架中，数据一般是4D，用NCHW或NHWC表达，其中：\nN - Batch C - Channel H - Height W - Width (2)逻辑表达\n假定N = 2，C = 16，H = 5，W = 4，那么这个4D数据，看起来是这样的： 我们比较直接的理解方式是3D，上图中从三个方向上理解，C方向\/H方向\/W方向。再加N方向上，就是4D。上图中红色标准的数值是这个数据里每个元素的数值。\n(3)逻辑表达\n无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持\n目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:\nTensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 四、持续更新中。。。 ",
       "inLanguage" : "en-US",
       "author" : "Advance",
       "creator" : "Advance",
@@ -31,7 +31,7 @@
       "copyrightYear" : "2023",
       "datePublished": "2023-11-15 00:00:00 \u002b0000 UTC",
       "dateModified" : "2023-11-15 00:00:00 \u002b0000 UTC",
-      "url" : "https:\/\/Advance2020.github.io\/posts\/study\/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0\/",
+      "url" : "https:\/\/advance2020.github.io\/posts\/study\/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0\/",
       "keywords" : [  ]
   }
 </script>
@@ -47,7 +47,7 @@ N - Batch C - Channel H - Height W - Width (2)逻辑表达
 (3)逻辑表达
 无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持
 目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:
-TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 " />
+TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 四、持续更新中。。。 " />
   <meta name="description" content="一、理解variance 与 bias varivance：反映准确率 bias:反映模型的拟合能力
 高方差（variance）—— 过拟合 —— 训练集上表现好，验证集上表现差 高偏差（bias）—— 欠拟合 —— 训练集上表现就比较差 解决方法：对于high bias，增加模型复杂度，训练一个更大的网络；对于high variance，增加训练数据；采用正则化的方法
 二、NCHW与NHWC数据格式 (1) 基本概念
@@ -57,7 +57,7 @@ N - Batch C - Channel H - Height W - Width (2)逻辑表达
 (3)逻辑表达
 无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持
 目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:
-TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 " />
+TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 四、持续更新中。。。 " />
   <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
   
 
@@ -120,7 +120,41 @@ TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小
    
 </div>
 <div class="header-line"></div>
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
 
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
         </div>
         <header class="post-header">
           <h1 class="post-title">深度学习基础笔记</h1>
@@ -186,6 +220,7 @@ TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小
 <li>math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1</li>
 <li>math.floor() —— “向下取整” ，即小数部分直接舍去</li>
 </ul>
+<h2 id="四持续更新中"><strong>四、持续更新中。。。</strong></h2>
 
         </div>
 
