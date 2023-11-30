@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "DDPM代码详解",
       "headline" : "DDPM代码详解",
-      "description" : "1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：\n从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\\epsilon \\in \\mathcal N(0,I)$ 调用模型预估 $\\epsilon_{\\theta}(\\sqrt{\\bar{\\alpha _t}}x_0\u002b\\sqrt{(1-\\bar{\\alpha_t}\\epsilon_t)},t)$ 计算噪声之间的 MSE loss: $\\parallel \\epsilon_t-\\epsilon_{\\theta}(\\sqrt{\\bar \\alpha_t}x_0\u002b\\sqrt(1-\\bar \\alpha_t)\\epsilon_t,t)\\parallel^2$ 逆向阶段采样如下步骤进行采样：\n从高斯分布采样$x_T$ 按照 $T,\u0026hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t\u0026gt;1$, 从高斯分布中采样 $z\\sim \\mathcal{N}(0,I)$ 学习出均值 $\\mu_\\theta(x_t,t)=\\frac{1}{\\sqrt{\\alpha_t}}(x_t-\\frac{1-\\alpha_t}{\\sqrt{1-\\bar\\alpha_t}}\\epsilon_\\theta(x_t,t))$, 学习均方差 $\\sigma_t=\\sqrt{\\frac{1-\\bar\\alpha_{t-1}}{1-\\bar\\alpha_t}} \\cdot\\beta_t$ 通过重参数技巧采样 $x_{t-1}=\\mu_\\theta(x_t,t)\u002b\\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:\nDenoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https:\/\/github.com\/tqch\/ddpm-torch 训练阶段\n以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:\n1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.",
+      "description" : "1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：\n从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\\epsilon \\in \\mathcal N(0,I)$ 调用模型预估 $\\epsilon_{\\theta}(\\sqrt{\\bar{\\alpha _t}}x_0\u002b\\sqrt{(1-\\bar{\\alpha_t})}\\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\\parallel \\epsilon_t-\\epsilon_{\\theta}(\\sqrt{\\bar \\alpha_t}x_0\u002b\\sqrt{(1-\\bar\\alpha_t)}\\epsilon_t,t)\\parallel^2$ 逆向阶段采样如下步骤进行采样：\n从高斯分布采样$x_T$ 按照 $T,\u0026hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t\u0026gt;1$, 从高斯分布中采样 $z\\sim \\mathcal{N}(0,I)$ 学习出均值 $\\mu_\\theta(x_t,t)=\\frac{1}{\\sqrt{\\alpha_t}}(x_t-\\frac{1-\\alpha_t}{\\sqrt{1-\\bar\\alpha_t}}\\epsilon_\\theta(x_t,t))$, 学习均方差 $\\sigma_t=\\sqrt{\\frac{1-\\bar\\alpha_{t-1}}{1-\\bar\\alpha_t}} \\cdot\\beta_t$ 通过重参数技巧采样 $x_{t-1}=\\mu_\\theta(x_t,t)\u002b\\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:\nDenoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https:\/\/github.com\/tqch\/ddpm-torch 训练阶段\n以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:\n1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.",
       "inLanguage" : "en-US",
       "author" : "Advance",
       "creator" : "Advance",
@@ -41,13 +41,13 @@
   <meta property="og:title" content="DDPM代码详解" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
-从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0&#43;\sqrt{(1-\bar{\alpha_t}\epsilon_t)},t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0&#43;\sqrt(1-\bar \alpha_t)\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
+从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0&#43;\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0&#43;\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
 从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}} \cdot\beta_t$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)&#43;\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
 Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
 以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
 1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self." />
   <meta name="description" content="1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
-从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0&#43;\sqrt{(1-\bar{\alpha_t}\epsilon_t)},t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0&#43;\sqrt(1-\bar \alpha_t)\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
+从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0&#43;\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0&#43;\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
 从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}} \cdot\beta_t$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)&#43;\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
 Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
 以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
@@ -185,10 +185,9 @@ code.has-jax {
 <li>随机选取 time step $t$</li>
 <li>生成高斯噪声 $\epsilon \in \mathcal N(0,I)$</li>
 <li>调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha
-_t}}x_0+\sqrt{(1-\bar{\alpha_t}\epsilon_t)},t)$</li>
+_t}}x_0+\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$</li>
 <li>计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar
-\alpha_t}x_0+\sqrt(1-\bar
-\alpha_t)\epsilon_t,t)\parallel^2$</li>
+\alpha_t}x_0+\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$</li>
 </ul>
 <p><strong>逆向阶段</strong>采样如下步骤进行采样：</p>
 <ul>
@@ -235,49 +234,88 @@ _t}}x_0+\sqrt{(1-\bar{\alpha_t}\epsilon_t)},t)$</li>
 </span></span></code></pre></div><ul>
 <li>第16行调用<code>step()</code>方法：</li>
 </ul>
-<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span>    <span style="color:#00f">def</span> <span style="color:#c34e00">step</span>(self, x, global_steps=1):
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>        loss = self.loss(x).mean() 
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        loss.div(self.num_accum).backward()  <span style="color:#f00;font-style:italic"># average over accumulated mini-batches</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>        <span style="color:#00f">if</span> global_steps % self.num_accum == 0:
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>            nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.grad_norm)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>            self.optimizer.step()
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>            self.optimizer.zero_grad(set_to_none=<span style="color:#00f">True</span>)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>            <span style="color:#f00;font-style:italic"># adjust learning rate every step (e.g. warming up)</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>            self.scheduler.step()
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>            <span style="color:#00f">if</span> self.use_ema and hasattr(self.ema, <span style="color:#009c00">&#34;update&#34;</span>):
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>                self.ema.update()
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        loss = loss.detach()
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        <span style="color:#00f">if</span> self.distributed:
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>            dist.reduce(loss, dst=0, op=dist.ReduceOp.SUM)  <span style="color:#f00;font-style:italic"># synchronize losses</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>            loss.div_(self.world_size)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>        self.stats.update(x.shape[0], loss=loss.item() * x.shape[0])
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#00f">def</span> <span style="color:#c34e00">step</span>(self, x, global_steps=1):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    loss = self.loss(x).mean() 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    loss.div(self.num_accum).backward()  <span style="color:#f00;font-style:italic"># average over accumulated mini-batches</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#00f">if</span> global_steps % self.num_accum == 0:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.grad_norm)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        self.optimizer.step()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        self.optimizer.zero_grad(set_to_none=<span style="color:#00f">True</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        <span style="color:#f00;font-style:italic"># adjust learning rate every step (e.g. warming up)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        self.scheduler.step()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>        <span style="color:#00f">if</span> self.use_ema and hasattr(self.ema, <span style="color:#009c00">&#34;update&#34;</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>            self.ema.update()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    loss = loss.detach()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>    <span style="color:#00f">if</span> self.distributed:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>        dist.reduce(loss, dst=0, op=dist.ReduceOp.SUM)  <span style="color:#f00;font-style:italic"># synchronize losses</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        loss.div_(self.world_size)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>    self.stats.update(x.shape[0], loss=loss.item() * x.shape[0])
 </span></span></code></pre></div><ul>
-<li>第2行调用<code>loss()</code>方法，training_losses 定义在 <code>GaussianDiffusion</code> 中, 计算噪声间的 MSE Loss.</li>
+<li>第2行调用<code>loss()</code>方法，train_losses 定义在 <code>GaussianDiffusion</code> 中, 计算噪声间的 MSE Loss.</li>
 </ul>
-<p>进入 <code>GaussianDiffusion</code> 中, 看到初始化函数中定义了诸多变量, 在注释中使用公式的方式进行说明:</p>
-<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#00f">def</span> __init__(self,betas,model_mean_type,model_var_type,loss_type,**kwargs):
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>        <span style="color:#f00;font-style:italic"># .....</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        alphas = 1 - betas <span style="color:#f00;font-style:italic"># α_t = 1 - β_t </span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>        self.alphas_bar = torch.cumprod(alphas, dim=0) <span style="color:#f00;font-style:italic"># </span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        alphas_bar_prev = torch.cat([torch.as_tensor([1., ], dtype=torch.float64), self.alphas_bar[:-1]])
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        self.sqrt_alphas_bar = torch.sqrt(self.alphas_bar)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        self.sqrt_one_minus_alphas_bar = torch.sqrt(1. - self.alphas_bar)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        <span style="color:#f00;font-style:italic"># q(x_{t-1} | x_t, x_0) </span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        <span style="color:#f00;font-style:italic"># refer to the formula 1-3 in README.md </span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>        sqrt_alphas_bar_prev = torch.sqrt(alphas_bar_prev) 
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        self.sqrt_recip_alphas_bar = torch.sqrt(1. / self.alphas_bar)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        self.sqrt_recip_m1_alphas_bar = torch.sqrt(1. / self.alphas_bar - 1.)  <span style="color:#f00;font-style:italic"># m1: minus 1</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        self.posterior_var = betas * (1. - alphas_bar_prev) / (1. - self.alphas_bar)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>        self.posterior_logvar_clipped = torch.log(torch.cat([self.posterior_var[[1]], self.posterior_var[1:]]))
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        self.posterior_mean_coef1 = betas * sqrt_alphas_bar_prev / (1. - self.alphas_bar)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>        self.posterior_mean_coef2 = torch.sqrt(alphas) * (1. - alphas_bar_prev) / (1. - self.alphas_bar)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>        <span style="color:#f00;font-style:italic"># for fixed model_var_type&#39;s</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>        self.fixed_model_var, self.fixed_model_logvar = {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>            <span style="color:#009c00">&#34;fixed-large&#34;</span>: (self.betas, torch.log(torch.cat([self.posterior_var[[1]], self.betas[1:]]))),
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>            <span style="color:#009c00">&#34;fixed-small&#34;</span>: (self.posterior_var, self.posterior_logvar_clipped)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>        }[self.model_var_type]
-</span></span></code></pre></div><p>（卡住了，不知道怎么在注释中显示公式。。。）</p>
-<p>未完待续。。。</p>
+<p>进入 <code>GaussianDiffusion</code> 中, 看到初始化函数中定义了诸多变量, 在注释中使用公式的方式进行说明:
+<img src="/img/DDPM/gongshi.jpg" alt=""></p>
+<p>下面进入<code>train_losses</code>函数中：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#00f">def</span> <span style="color:#c34e00">train_losses</span>(self, denoise_fn, x_0, t, noise=<span style="color:#00f">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#f00;font-style:italic"># 添加噪声</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    <span style="color:#00f">if</span> noise is <span style="color:#00f">None</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>        noise = torch.randn_like(x_0)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    x_t = self.q_sample(x_0, t, noise=noise)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#f00;font-style:italic"># calculate the loss</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    <span style="color:#00f">if</span> self.loss_type == <span style="color:#009c00">&#34;kl&#34;</span>:     <span style="color:#f00;font-style:italic"># kl: weighted</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        <span style="color:#f00;font-style:italic">#......</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    <span style="color:#00f">elif</span> self.loss_type == <span style="color:#009c00">&#34;mse&#34;</span>:  <span style="color:#f00;font-style:italic"># mse: unweighted</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>        <span style="color:#00f">assert</span> self.model_var_type != <span style="color:#009c00">&#34;learned&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        <span style="color:#00f">if</span> self.model_mean_type == <span style="color:#009c00">&#34;mean&#34;</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>            target = self.q_posterior_mean_var(x_0=x_0, x_t=x_t, t=t)[0]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        <span style="color:#00f">elif</span> self.model_mean_type == <span style="color:#009c00">&#34;x_0&#34;</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>            target = x_0
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        <span style="color:#00f">elif</span> self.model_mean_type == <span style="color:#009c00">&#34;eps&#34;</span>: <span style="color:#f00;font-style:italic"># 默认为esp</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>            target = noise
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>        <span style="color:#00f">else</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>            <span style="color:#00f">raise</span> NotImplementedError(self.model_mean_type)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>        model_out = denoise_fn(x_t, t)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>        losses = flat_mean((target - model_out).pow(2))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>    <span style="color:#00f">else</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>        <span style="color:#00f">raise</span> NotImplementedError(self.loss_type)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>    <span style="color:#00f">return</span> losses
+</span></span></code></pre></div><ul>
+<li>第15行：<code>self.model_mean_type</code>默认为<code>eps</code>,模型学习的是噪声，因此<code>target</code>即为第3行定义的<code>noise</code>，即 $\epsilon_t$</li>
+<li>第5行：调用<code>self.q_sample</code>计算 $x_t$, 即公式 $x_t=\sqrt{\bar{\alpha
+_t}}x_0+\sqrt{(1-\bar{\alpha_t}}\epsilon_t$</li>
+<li>第19行：<code>denoise_fn</code>是定义在<code>unet.py</code>中的Unet模型，该模型的输入和输出大小相同，结合第5行得到的 $x_t$,模型预估出的噪声为 $\epsilon_{\theta}(\sqrt{\bar{\alpha
+_t}}x_0+\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$</li>
+<li>第20行：计算两个噪声之间的MSE：$\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar
+\alpha_t}x_0+\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$，并利用反向传播算法训练模型</li>
+</ul>
+<p>上面第5行调用的<code>self.q_sample</code>定义如下：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#cc00a3">@staticmethod</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#00f">def</span> <span style="color:#c34e00">_extract</span>(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>            arr, t, x,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>            dtype=torch.float32, device=torch.device(<span style="color:#009c00">&#34;cpu&#34;</span>), ndim=4):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        <span style="color:#00f">if</span> x is not <span style="color:#00f">None</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>            dtype = x.dtype
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>            device = x.device
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>            ndim = x.ndim
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        out = torch.as_tensor(arr, dtype=dtype, device=device).gather(0, t)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>        <span style="color:#00f">return</span> out.reshape((-1, ) + (1, ) * (ndim - 1))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span><span style="color:#00f">def</span> <span style="color:#c34e00">q_sample</span>(self, x_0, t, noise=<span style="color:#00f">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        <span style="color:#00f">if</span> noise is <span style="color:#00f">None</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>            noise = torch.randn_like(x_0)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        coef1 = self._extract(self.sqrt_alphas_bar, t, x_0)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>        coef2 = self._extract(self.sqrt_one_minus_alphas_bar, t, x_0)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>        <span style="color:#00f">return</span> coef1 * x_0 + coef2 * noise
+</span></span></code></pre></div><ul>
+<li>第15行中<code>self.sqrt_alphas_bar</code>是 $\sqrt{\bar\alpha_t}$</li>
+<li>第16行中<code>self.sqrt_one_minus_alphas_bar</code>是 $\sqrt{1-\bar\alpha_t}$</li>
+<li>第17行，即计算 $x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon_t$</li>
+<li>第 2 行的<code>_extract</code>在代码中经常被使用到, 看到它只需知道它是用来提取系数的即可. 引入输入是一个 Batch, 里面的每个样本都会随机采样一个 time step t, 因此需要使用 <code>gather</code> 来将 $\bar{\alpha_t}$之类选出来, 然后将系数 reshape 为 [B, 1, 1, &hellip;.] 的形式, 目的是为了利用 broadcasting 机制和 $x_t$ 这个Tensor 相乘.</li>
+</ul>
+<p><em>广播(Broadcasting)机制: 是 numpy 对不同形状(shape)的数组进行数值计算的一种方式。</em></p>
+<p>前向的训练阶段代码较为简单, 下面分析逆向阶段。</p>
+<p><strong>逆向阶段</strong></p>
+<p>逆向阶段代码定义在<code>GaussianDiffusion</code> 中:</p>
 
         </div>
 
