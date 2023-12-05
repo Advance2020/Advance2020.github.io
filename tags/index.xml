@@ -5,6 +5,52 @@
     <link>https://Advance2020.github.io/tags/</link>
     <description>Recent content in Tags on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>cn</language><atom:link href="https://Advance2020.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <language>cn</language>
+    <lastBuildDate>Sun, 03 Dec 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DDPM</title>
+      <link>https://Advance2020.github.io/tags/ddpm/</link>
+      <pubDate>Sun, 03 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/tags/ddpm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>代码理解</title>
+      <link>https://Advance2020.github.io/tags/%E4%BB%A3%E7%A0%81%E7%90%86%E8%A7%A3/</link>
+      <pubDate>Sun, 03 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/tags/%E4%BB%A3%E7%A0%81%E7%90%86%E8%A7%A3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>扩散模型</title>
+      <link>https://Advance2020.github.io/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/</link>
+      <pubDate>Sun, 03 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DDIM</title>
+      <link>https://Advance2020.github.io/tags/ddim/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/tags/ddim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>论文理解</title>
+      <link>https://Advance2020.github.io/tags/%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/tags/%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

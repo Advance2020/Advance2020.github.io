@@ -6,7 +6,18 @@
     <description>Recent content in Posts on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Mon, 27 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 03 Dec 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DDPM基础代码解析</title>
+      <link>https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Sun, 03 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <description>本文所分析的DDPM论文以及代码的相关信息如下:
+Denoising Diffusion Probabilistic Models (论文) 直接调用预训练好的扩散模型demo版（Pytorch） 一、 demo.py 首先由__init__初始化一些显示界面的参数，如进度条。 然后进入main()函数，在main()函数中完成了以下任务:
+数据集、ema多选框、扩散步骤的预设置 get_state()实例化扩散过程，包括加载预训练的扩散模型、$x_T$、以及设定扩散步骤 实时显示当前图像 $x_t$ 和 cur_step 根据页面触发的动作Denoise和Diffuse来分别调用去噪函数和扩散函数，如下图： 1def main(): 2 #无关代码已省略 ...... 3 name = st.sidebar.radio(&amp;#34;Model&amp;#34;, (&amp;#34;cifar10&amp;#34;, &amp;#34;lsun_bedroom&amp;#34;, &amp;#34;lsun_cat&amp;#34;, &amp;#34;lsun_church&amp;#34;)) 4 ema = st.sidebar.checkbox(&amp;#34;ema&amp;#34;, value=True) 5 state = get_state(name, ema=ema) 6 diffusion = state[&amp;#34;diffusion&amp;#34;] 7 #&amp;#34;Number of steps&amp;#34; 默认为1000 8 n_steps = st.sidebar.number_input(&amp;#34;Number of steps&amp;#34;, min_value=1,max_value=diffusion.num_timesteps,value=diffusion.num_timesteps) 9 def callback(x, i, x0=None): 10 if show_x0 and x0 is not None: 11 x = x0 12 output.</description>
+    </item>
+    
     <item>
       <title>DDPM代码详解</title>
       <link>https://Advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</link>
@@ -15,7 +26,7 @@
       <guid>https://Advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</guid>
       <description>1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
 从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0+\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0+\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
-从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}} \cdot\beta_t$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
+从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
 Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
 以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
 1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.</description>
@@ -29,14 +40,16 @@ Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:htt
       <guid>https://Advance2020.github.io/posts/study/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</guid>
       <description>一、理解variance 与 bias varivance：反映准确率 bias:反映模型的拟合能力
 高方差（variance）—— 过拟合 —— 训练集上表现好，验证集上表现差 高偏差（bias）—— 欠拟合 —— 训练集上表现就比较差 解决方法：对于high bias，增加模型复杂度，训练一个更大的网络；对于high variance，增加训练数据；采用正则化的方法
-二、NCHW与NHWC数据格式 (1) 基本概念
+二、NCHW与NHWC数据格式 （1） 基本概念
 深度学习框架中，数据一般是4D，用NCHW或NHWC表达，其中：
-N - Batch C - Channel H - Height W - Width (2)逻辑表达
+N - Batch C - Channel H - Height W - Width （2）逻辑表达
 假定N = 2，C = 16，H = 5，W = 4，那么这个4D数据，看起来是这样的： 我们比较直接的理解方式是3D，上图中从三个方向上理解，C方向/H方向/W方向。再加N方向上，就是4D。上图中红色标准的数值是这个数据里每个元素的数值。
-(3)逻辑表达
-无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 (4)不同框架支持
+（3）逻辑表达
+无论逻辑表达上是几维的数据，在计算机中存储时都是按照1D来存储的。NCHW和NHWC格式数据的存储形式如下图所示： NCHW是先取W方向数据；然后H方向；再C方向；最后N方向。 NHWC是先取C方向数据；然后W方向；再H方向；最后N方向。 （4）不同框架支持
 目前的主流ML框架对NCHW和NHWC数据格式做了支持，有些框架可以支持两种且用户未做设置时有一个缺省值:
-TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 四、持续更新中。。。 </description>
+TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小数化整数 math.round() —— 四舍五入，注意正负数的不同 math.ceil() —— 向上取整，即小数部分直接舍去，并向正数部分进1 math.floor() —— “向下取整” ，即小数部分直接舍去 四、lambda函数 （1）lambda函数语法
+表现形式如下：lambda [arg1,[arg2,.....argn]]:expression
+其中，lambda 是 Python 预留的关键字，[arg…] 和 expression 由用户自定义。 （2）lambda函数特性</description>
     </item>
     
     <item>

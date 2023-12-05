@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<header>
+  <div class="header-title">
+    <a href="/"
+      >Advance Yang</a
+    >
+  </div>
+  <div class="header-subtitle">吾生也有涯，而知也无涯。</div>
+</header>
+<div class="row end-md center-xs header-items">
+  
+  <div class="header-item">
+    <a href="https://user.qzone.qq.com/2167506238/infocenter" target="_blank">QZone</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="https://github.com/Advance2020" target="_blank">Github</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="" target="_blank">About</a>
+  </div>
+  
+</div>
+<div class="row end-xs">
+   
+  <div class="lang-switch col-xs-3 col-xs-offset-9">
+    <a href="/en/">English</a>
+  </div>
+   
+</div>
+<div class="header-line"></div>
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">DDPM基础代码解析</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2023-12-03 00:00:00 UTC">
+                03 Dec 2023
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://advance2020.github.io/">@Advance</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.117.0">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Advance" />
+  <meta property="og:url" content="https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" />
+  <link rel="canonical" href="https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" /><link rel="alternate" type="application/atom+xml" href="https://Advance2020.github.ioindex.xml" title="Advance&#39;s blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/Advance2020.github.io"
+      },
+      "articleSection" : "posts",
+      "name" : "DDPM基础代码解析",
+      "headline" : "DDPM基础代码解析",
+      "description" : "本文所分析的DDPM论文以及代码的相关信息如下:\nDenoising Diffusion Probabilistic Models (论文) 直接调用预训练好的扩散模型demo版（Pytorch） 一、 demo.py 首先由__init__初始化一些显示界面的参数，如进度条。 然后进入main()函数，在main()函数中完成了以下任务:\n数据集、ema多选框、扩散步骤的预设置 get_state()实例化扩散过程，包括加载预训练的扩散模型、$x_T$、以及设定扩散步骤 实时显示当前图像 $x_t$ 和 cur_step 根据页面触发的动作Denoise和Diffuse来分别调用去噪函数和扩散函数，如下图： 1def main(): 2 #无关代码已省略 ...... 3 name = st.sidebar.radio(\u0026#34;Model\u0026#34;, (\u0026#34;cifar10\u0026#34;, \u0026#34;lsun_bedroom\u0026#34;, \u0026#34;lsun_cat\u0026#34;, \u0026#34;lsun_church\u0026#34;)) 4 ema = st.sidebar.checkbox(\u0026#34;ema\u0026#34;, value=True) 5 state = get_state(name, ema=ema) 6 diffusion = state[\u0026#34;diffusion\u0026#34;] 7 #\u0026#34;Number of steps\u0026#34; 默认为1000 8 n_steps = st.sidebar.number_input(\u0026#34;Number of steps\u0026#34;, min_value=1,max_value=diffusion.num_timesteps,value=diffusion.num_timesteps) 9 def callback(x, i, x0=None): 10 if show_x0 and x0 is not None: 11 x = x0 12 output.",
+      "inLanguage" : "en-US",
+      "author" : "Advance",
+      "creator" : "Advance",
+      "publisher": "Advance",
+      "accountablePerson" : "Advance",
+      "copyrightHolder" : "Advance",
+      "copyrightYear" : "2023",
+      "datePublished": "2023-12-03 00:00:00 \u002b0000 UTC",
+      "dateModified" : "2023-12-03 00:00:00 \u002b0000 UTC",
+      "url" : "https:\/\/Advance2020.github.io\/posts\/study\/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90\/",
+      "keywords" : [ "DDPM","扩散模型","代码理解", ]
+  }
+</script>
+<title>DDPM基础代码解析</title>
+  <meta property="og:title" content="DDPM基础代码解析" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="本文所分析的DDPM论文以及代码的相关信息如下:
+Denoising Diffusion Probabilistic Models (论文) 直接调用预训练好的扩散模型demo版（Pytorch） 一、 demo.py 首先由__init__初始化一些显示界面的参数，如进度条。 然后进入main()函数，在main()函数中完成了以下任务:
+数据集、ema多选框、扩散步骤的预设置 get_state()实例化扩散过程，包括加载预训练的扩散模型、$x_T$、以及设定扩散步骤 实时显示当前图像 $x_t$ 和 cur_step 根据页面触发的动作Denoise和Diffuse来分别调用去噪函数和扩散函数，如下图： 1def main(): 2 #无关代码已省略 ...... 3 name = st.sidebar.radio(&amp;#34;Model&amp;#34;, (&amp;#34;cifar10&amp;#34;, &amp;#34;lsun_bedroom&amp;#34;, &amp;#34;lsun_cat&amp;#34;, &amp;#34;lsun_church&amp;#34;)) 4 ema = st.sidebar.checkbox(&amp;#34;ema&amp;#34;, value=True) 5 state = get_state(name, ema=ema) 6 diffusion = state[&amp;#34;diffusion&amp;#34;] 7 #&amp;#34;Number of steps&amp;#34; 默认为1000 8 n_steps = st.sidebar.number_input(&amp;#34;Number of steps&amp;#34;, min_value=1,max_value=diffusion.num_timesteps,value=diffusion.num_timesteps) 9 def callback(x, i, x0=None): 10 if show_x0 and x0 is not None: 11 x = x0 12 output." />
+  <meta name="description" content="本文所分析的DDPM论文以及代码的相关信息如下:
+Denoising Diffusion Probabilistic Models (论文) 直接调用预训练好的扩散模型demo版（Pytorch） 一、 demo.py 首先由__init__初始化一些显示界面的参数，如进度条。 然后进入main()函数，在main()函数中完成了以下任务:
+数据集、ema多选框、扩散步骤的预设置 get_state()实例化扩散过程，包括加载预训练的扩散模型、$x_T$、以及设定扩散步骤 实时显示当前图像 $x_t$ 和 cur_step 根据页面触发的动作Denoise和Diffuse来分别调用去噪函数和扩散函数，如下图： 1def main(): 2 #无关代码已省略 ...... 3 name = st.sidebar.radio(&amp;#34;Model&amp;#34;, (&amp;#34;cifar10&amp;#34;, &amp;#34;lsun_bedroom&amp;#34;, &amp;#34;lsun_cat&amp;#34;, &amp;#34;lsun_church&amp;#34;)) 4 ema = st.sidebar.checkbox(&amp;#34;ema&amp;#34;, value=True) 5 state = get_state(name, ema=ema) 6 diffusion = state[&amp;#34;diffusion&amp;#34;] 7 #&amp;#34;Number of steps&amp;#34; 默认为1000 8 n_steps = st.sidebar.number_input(&amp;#34;Number of steps&amp;#34;, min_value=1,max_value=diffusion.num_timesteps,value=diffusion.num_timesteps) 9 def callback(x, i, x0=None): 10 if show_x0 and x0 is not None: 11 x = x0 12 output." />
+  <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
+  
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body blockquote{margin:0;padding:0 1em;color:#57606a;border-left:.25em solid #d0d7de}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;font-weight:500;color:#c7254e;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;color:inherit;background-color:inherit;border:0}.Chinese .markdown-body{line-height:140%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.5;text-justify:ideographic;margin-bottom:1em}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{text-align:center}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Advance&#39;s blog">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+   
+        <div class="post-content markdown-body">
+          
+          <p>本文所分析的DDPM论文以及代码的相关信息如下:</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2006.11239.pdf">Denoising Diffusion Probabilistic Models (论文) </a></li>
+<li><a href="https://github.com/pesser/pytorch_diffusion/tree/master">直接调用预训练好的扩散模型demo版（Pytorch）</a></li>
+</ul>
+<h2 id="一-demopy">一、 demo.py</h2>
+<p>首先由<code>__init__</code>初始化一些显示界面的参数，如进度条。
+然后进入<code>main()</code>函数，在<code>main()</code>函数中完成了以下任务:</p>
+<ul>
+<li>数据集、ema多选框、扩散步骤的预设置</li>
+<li><code>get_state()</code>实例化扩散过程，包括加载预训练的扩散模型、$x_T$、以及设定扩散步骤</li>
+<li>实时显示当前图像 $x_t$ 和 cur_step</li>
+<li>根据页面触发的动作<code>Denoise</code>和<code>Diffuse</code>来分别调用去噪函数和扩散函数，如下图：
+<img src="/img/DDPM/demo.gif" alt=""></li>
+</ul>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main</span>():
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#09f;font-style:italic">#无关代码已省略 ......</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    name <span style="color:#555">=</span> st<span style="color:#555">.</span>sidebar<span style="color:#555">.</span>radio(<span style="color:#c30">&#34;Model&#34;</span>, (<span style="color:#c30">&#34;cifar10&#34;</span>, <span style="color:#c30">&#34;lsun_bedroom&#34;</span>, <span style="color:#c30">&#34;lsun_cat&#34;</span>, <span style="color:#c30">&#34;lsun_church&#34;</span>))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    ema <span style="color:#555">=</span> st<span style="color:#555">.</span>sidebar<span style="color:#555">.</span>checkbox(<span style="color:#c30">&#34;ema&#34;</span>, value<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    state <span style="color:#555">=</span> get_state(name, ema<span style="color:#555">=</span>ema)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    diffusion <span style="color:#555">=</span> state[<span style="color:#c30">&#34;diffusion&#34;</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    <span style="color:#09f;font-style:italic">#&#34;Number of steps&#34; 默认为1000</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    n_steps <span style="color:#555">=</span> st<span style="color:#555">.</span>sidebar<span style="color:#555">.</span>number_input(<span style="color:#c30">&#34;Number of steps&#34;</span>, min_value<span style="color:#555">=</span><span style="color:#f60">1</span>,max_value<span style="color:#555">=</span>diffusion<span style="color:#555">.</span>num_timesteps,value<span style="color:#555">=</span>diffusion<span style="color:#555">.</span>num_timesteps)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">callback</span>(x, i, x0<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>        <span style="color:#069;font-weight:bold">if</span> show_x0 <span style="color:#000;font-weight:bold">and</span> x0 <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>            x <span style="color:#555">=</span> x0
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        output<span style="color:#555">.</span>image(diffusion<span style="color:#555">.</span>torch2hwcuint8(x, clip<span style="color:#555">=</span>clip)[<span style="color:#f60">0</span>])
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        step<span style="color:#555">.</span>text(<span style="color:#c30">&#34;Current step: </span><span style="color:#a00">{}</span><span style="color:#c30">&#34;</span><span style="color:#555">.</span>format(i))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>    callback(state[<span style="color:#c30">&#34;x&#34;</span>], state[<span style="color:#c30">&#34;curr_step&#34;</span>])<span style="color:#09f;font-style:italic">#展示初始图像x_T和cur_step:1000</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>    denoise <span style="color:#555">=</span> st<span style="color:#555">.</span>sidebar<span style="color:#555">.</span>button(<span style="color:#c30">&#34;Denoise&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>    <span style="color:#069;font-weight:bold">if</span> state[<span style="color:#c30">&#34;curr_step&#34;</span>] <span style="color:#555">&gt;</span> <span style="color:#f60">0</span> <span style="color:#000;font-weight:bold">and</span> denoise:<span style="color:#09f;font-style:italic">#去噪</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>        x <span style="color:#555">=</span> diffusion<span style="color:#555">.</span>denoise(<span style="color:#f60">1</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>                              n_steps<span style="color:#555">=</span>n_steps, x<span style="color:#555">=</span>state[<span style="color:#c30">&#34;x&#34;</span>],
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>                              curr_step<span style="color:#555">=</span>state[<span style="color:#c30">&#34;curr_step&#34;</span>],
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>                              progress_bar<span style="color:#555">=</span>tqdm_factory,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>                              callback<span style="color:#555">=</span>callback)<span style="color:#09f;font-style:italic">#调用回调函数实时显示</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>        state[<span style="color:#c30">&#34;x&#34;</span>] <span style="color:#555">=</span> x
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>        state[<span style="color:#c30">&#34;curr_step&#34;</span>] <span style="color:#555">=</span> <span style="color:#366">max</span>(<span style="color:#f60">0</span>, state[<span style="color:#c30">&#34;curr_step&#34;</span>]<span style="color:#555">-</span>n_steps)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>    diffuse <span style="color:#555">=</span> st<span style="color:#555">.</span>sidebar<span style="color:#555">.</span>button(<span style="color:#c30">&#34;Diffuse&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>    <span style="color:#069;font-weight:bold">if</span> state[<span style="color:#c30">&#34;curr_step&#34;</span>] <span style="color:#555">&lt;</span> diffusion<span style="color:#555">.</span>num_timesteps <span style="color:#000;font-weight:bold">and</span> diffuse:<span style="color:#09f;font-style:italic">#扩散</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>        x <span style="color:#555">=</span> diffusion<span style="color:#555">.</span>diffuse(<span style="color:#f60">1</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>                              n_steps<span style="color:#555">=</span>n_steps, x<span style="color:#555">=</span>state[<span style="color:#c30">&#34;x&#34;</span>],
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>                              curr_step<span style="color:#555">=</span>state[<span style="color:#c30">&#34;curr_step&#34;</span>],
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>                              progress_bar<span style="color:#555">=</span>tqdm_factory,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span>                              callback<span style="color:#555">=</span>callback)<span style="color:#09f;font-style:italic">#调用回调函数实时显示</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>        state[<span style="color:#c30">&#34;x&#34;</span>] <span style="color:#555">=</span> x
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>        state[<span style="color:#c30">&#34;curr_step&#34;</span>] <span style="color:#555">=</span> <span style="color:#366">min</span>(diffusion<span style="color:#555">.</span>num_timesteps, state[<span style="color:#c30">&#34;curr_step&#34;</span>]<span style="color:#555">+</span>n_steps)
+</span></span></code></pre></div><p>其中diffusion模型的实例化在<code>get_state()</code>函数中实现：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_state</span>(name, ema):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#069;font-weight:bold">if</span> ema:<span style="color:#09f;font-style:italic">#判断是否使用滑动平均指数(ema)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        name <span style="color:#555">=</span> <span style="color:#c30">&#34;ema_&#34;</span><span style="color:#555">+</span>name
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>    diffusion <span style="color:#555">=</span> Diffusion<span style="color:#555">.</span>from_pretrained(name)<span style="color:#09f;font-style:italic">#加载对应的预训练模型</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    state <span style="color:#555">=</span> {<span style="color:#c30">&#34;x&#34;</span>: diffusion<span style="color:#555">.</span>denoise(<span style="color:#f60">1</span>, n_steps<span style="color:#555">=</span><span style="color:#f60">0</span>),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>             <span style="color:#c30">&#34;curr_step&#34;</span>: diffusion<span style="color:#555">.</span>num_timesteps,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>             <span style="color:#c30">&#34;diffusion&#34;</span>: diffusion}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>    <span style="color:#069;font-weight:bold">return</span> state
+</span></span></code></pre></div><p>至此<code>demo.py</code>的功能基本介绍完毕，下面学习<code>diffusion.py</code>中的Diffusion类，查看具体扩散和去噪的实现。</p>
+<h2 id="二diffusion类">二、Diffusion类</h2>
+<p>本文分析的代码是直接调用的预训练好的模型，因此没有训练过程。<code>Diffusion类</code>中实现的功能有：</p>
+<ul>
+<li>类初始化，定义论文公式计算中需要的各参数</li>
+<li>加载预训练模型的方法</li>
+<li>去噪方法和扩散方法</li>
+<li>保存生成的图片</li>
+</ul>
+<p>其中定义的方法如下：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Diffusion</span>(<span style="color:#366">object</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#09f;font-style:italic">#方法实现代码省略......</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    <span style="color:#069;font-weight:bold">def</span> __init__(self, diffusion_config, model_config, device<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">init_diffusion_parameters</span>(self, <span style="color:#555">**</span>config):<span style="color:#09f;font-style:italic">#初始化公式参数        </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">from_pretrained</span>(cls, name, device<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):<span style="color:#09f;font-style:italic">#加载预训练模型        </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">denoise</span>(self, n, n_steps<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, x<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, curr_step<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>                progress_bar<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> i, total<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>: i,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>                callback<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> x, i, x0<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>: <span style="color:#069;font-weight:bold">None</span>):<span style="color:#09f;font-style:italic">#去噪       </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>     <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">diffuse</span>(self, n, n_steps<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, x<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, curr_step<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>                progress_bar<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> i, total<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>: i,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>                callback<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> x, i: <span style="color:#069;font-weight:bold">None</span>):<span style="color:#09f;font-style:italic">#扩散        </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">torch2hwcuint8</span>(x, clip<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>):<span style="color:#09f;font-style:italic">#转化图像格式       </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">save</span>(x, format_string, start_idx<span style="color:#555">=</span><span style="color:#f60">0</span>):<span style="color:#09f;font-style:italic">#保存图像</span>
+</span></span></code></pre></div><p><strong>1.</strong> <code>init_diffusion_parameters()</code>里面实现了论文公式中计算相关参数的定义,经过初始化后，可以得到相关属性：</p>
+<ul>
+<li>model_var_type —— 对应方差类别</li>
+<li>betas —— $\beta_t$ 相关的计算参数</li>
+<li>logvar —— 方差的对数</li>
+</ul>
+<p><img src="/img/DDPM/daima2.png" alt=""></p>
+<p>其中103行中调用<code>get_beta_schedule()</code>方法来决定 $\beta_{1:T}$ 序列的增长方式：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_beta_schedule</span>(beta_schedule, <span style="color:#555">*</span>, beta_start, beta_end, num_diffusion_timesteps):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#069;font-weight:bold">if</span> beta_schedule <span style="color:#555">==</span> <span style="color:#c30">&#39;quad&#39;</span>:<span style="color:#09f;font-style:italic">#二次方增长</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        betas <span style="color:#555">=</span> np<span style="color:#555">.</span>linspace(beta_start <span style="color:#555">**</span> <span style="color:#f60">0.5</span>, beta_end <span style="color:#555">**</span> <span style="color:#f60">0.5</span>, num_diffusion_timesteps, dtype<span style="color:#555">=</span>np<span style="color:#555">.</span>float64) <span style="color:#555">**</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#069;font-weight:bold">elif</span> beta_schedule <span style="color:#555">==</span> <span style="color:#c30">&#39;linear&#39;</span>:<span style="color:#09f;font-style:italic">#线性增长</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        betas <span style="color:#555">=</span> np<span style="color:#555">.</span>linspace(beta_start, beta_end, num_diffusion_timesteps, dtype<span style="color:#555">=</span>np<span style="color:#555">.</span>float64)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#069;font-weight:bold">elif</span> beta_schedule <span style="color:#555">==</span> <span style="color:#c30">&#39;warmup10&#39;</span>:<span style="color:#09f;font-style:italic">#预热，训练初期较小，之后修改为预设的方式</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        betas <span style="color:#555">=</span> _warmup_beta(beta_start, beta_end, num_diffusion_timesteps, <span style="color:#f60">0.1</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    <span style="color:#069;font-weight:bold">elif</span> beta_schedule <span style="color:#555">==</span> <span style="color:#c30">&#39;warmup50&#39;</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        betas <span style="color:#555">=</span> _warmup_beta(beta_start, beta_end, num_diffusion_timesteps, <span style="color:#f60">0.5</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>    <span style="color:#069;font-weight:bold">elif</span> beta_schedule <span style="color:#555">==</span> <span style="color:#c30">&#39;const&#39;</span>:<span style="color:#09f;font-style:italic">#常数</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        betas <span style="color:#555">=</span> beta_end <span style="color:#555">*</span> np<span style="color:#555">.</span>ones(num_diffusion_timesteps, dtype<span style="color:#555">=</span>np<span style="color:#555">.</span>float64)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    <span style="color:#069;font-weight:bold">elif</span> beta_schedule <span style="color:#555">==</span> <span style="color:#c30">&#39;jsd&#39;</span>:  <span style="color:#09f;font-style:italic"># 1/T, 1/(T-1), 1/(T-2), ..., 1</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        betas <span style="color:#555">=</span> <span style="color:#f60">1.</span> <span style="color:#555">/</span> np<span style="color:#555">.</span>linspace(num_diffusion_timesteps, <span style="color:#f60">1</span>, num_diffusion_timesteps, dtype<span style="color:#555">=</span>np<span style="color:#555">.</span>float64)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>    <span style="color:#069;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">NotImplementedError</span>(beta_schedule)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>    <span style="color:#069;font-weight:bold">assert</span> betas<span style="color:#555">.</span>shape <span style="color:#555">==</span> (num_diffusion_timesteps,)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>    <span style="color:#069;font-weight:bold">return</span> betas
+</span></span></code></pre></div><p><strong>2.</strong> <code>from_pretrained()</code>实现根据不同数据集加载对应预训练模型的功能，以cifar10为例：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">from_pretrained</span>(cls, name, device<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>        cifar10_cfg <span style="color:#555">=</span> {  <span style="color:#09f;font-style:italic">#模型的相关参数设置</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>            <span style="color:#c30">&#34;resolution&#34;</span>: <span style="color:#f60">32</span>, <span style="color:#09f;font-style:italic">#图像的分辨率</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>            <span style="color:#c30">&#34;in_channels&#34;</span>: <span style="color:#f60">3</span>, <span style="color:#09f;font-style:italic">#输入通道数</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>            <span style="color:#c30">&#34;out_ch&#34;</span>: <span style="color:#f60">3</span>,      <span style="color:#09f;font-style:italic">#输出通道数</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>            <span style="color:#c30">&#34;ch&#34;</span>: <span style="color:#f60">128</span>,        <span style="color:#09f;font-style:italic">#初始通道数</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>            <span style="color:#c30">&#34;ch_mult&#34;</span>: (<span style="color:#f60">1</span>,<span style="color:#f60">2</span>,<span style="color:#f60">2</span>,<span style="color:#f60">2</span>), <span style="color:#09f;font-style:italic">#通道数的倍数列表</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>            <span style="color:#c30">&#34;num_res_blocks&#34;</span>: <span style="color:#f60">2</span>, <span style="color:#09f;font-style:italic">#残差块数量</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>            <span style="color:#c30">&#34;attn_resolutions&#34;</span>: (<span style="color:#f60">16</span>,), <span style="color:#09f;font-style:italic">#注意力机制的分辨率列表</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>            <span style="color:#c30">&#34;dropout&#34;</span>: <span style="color:#f60">0.1</span>,    <span style="color:#09f;font-style:italic">#随机丢弃的比例</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        lsun_cfg <span style="color:#555">=</span> {<span style="color:#555">...</span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        model_config_map <span style="color:#555">=</span> {<span style="color:#c30">&#34;cifar10&#34;</span>: cifar10_cfg,<span style="color:#555">...</span> }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>        diffusion_config <span style="color:#555">=</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>            <span style="color:#c30">&#34;beta_schedule&#34;</span>: <span style="color:#c30">&#34;linear&#34;</span>,<span style="color:#09f;font-style:italic"># β序列的获取方式为线性增长</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>            <span style="color:#c30">&#34;beta_start&#34;</span>: <span style="color:#f60">0.0001</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>            <span style="color:#c30">&#34;beta_end&#34;</span>: <span style="color:#f60">0.02</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>            <span style="color:#c30">&#34;num_diffusion_timesteps&#34;</span>: <span style="color:#f60">1000</span>,<span style="color:#09f;font-style:italic">#扩散步骤</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>        model_var_type_map <span style="color:#555">=</span> { <span style="color:#c30">&#34;cifar10&#34;</span>: <span style="color:#c30">&#34;fixedlarge&#34;</span>, 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>        <span style="color:#c30">&#34;lsun_bedroom&#34;</span>: <span style="color:#c30">&#34;fixedsmall&#34;</span>,<span style="color:#555">...</span>}<span style="color:#09f;font-style:italic">#方差类别</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>        ema <span style="color:#555">=</span> name<span style="color:#555">.</span>startswith(<span style="color:#c30">&#34;ema_&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>        basename <span style="color:#555">=</span> name[<span style="color:#366">len</span>(<span style="color:#c30">&#34;ema_&#34;</span>):] <span style="color:#069;font-weight:bold">if</span> ema <span style="color:#069;font-weight:bold">else</span> name
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>        diffusion_config[<span style="color:#c30">&#34;model_var_type&#34;</span>] <span style="color:#555">=</span> model_var_type_map[basename]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Instantiating&#34;</span>) <span style="color:#09f;font-style:italic">#实例化中...</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>        diffusion <span style="color:#555">=</span> cls(diffusion_config, model_config_map[basename], device)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>        ckpt <span style="color:#555">=</span> get_ckpt_path(name)<span style="color:#09f;font-style:italic">#到对应的下载链接去下载模型</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Loading checkpoint </span><span style="color:#a00">{}</span><span style="color:#c30">&#34;</span><span style="color:#555">.</span>format(ckpt))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span>        diffusion<span style="color:#555">.</span>model<span style="color:#555">.</span>load_state_dict(torch<span style="color:#555">.</span>load(ckpt, map_location<span style="color:#555">=</span>diffusion<span style="color:#555">.</span>device)) <span style="color:#09f;font-style:italic"># 加载模型</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>        diffusion<span style="color:#555">.</span>model<span style="color:#555">.</span>to(diffusion<span style="color:#555">.</span>device)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>        diffusion<span style="color:#555">.</span>model<span style="color:#555">.</span>eval()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Moved model to </span><span style="color:#a00">{}</span><span style="color:#c30">&#34;</span><span style="color:#555">.</span>format(diffusion<span style="color:#555">.</span>device))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span>        <span style="color:#069;font-weight:bold">return</span> diffusion
+</span></span></code></pre></div><p><strong>3.</strong> <code>denoise()</code>方法，循环 $T$ 步调用<code>denoising_step()</code>来完成去噪，并且实时显示去噪进度条。但是这里有一个比较疑惑的问题：<strong>为什么callback这个回调函数啥也不干，那么它的意义在哪？</strong></p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">denoise</span>(self, n, n_steps<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, x<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, curr_step<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>            progress_bar<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> i, total<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>: i,<span style="color:#09f;font-style:italic">#lambda函数的用法</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>            callback<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> x, i, x0<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>: <span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#069;font-weight:bold">with</span> torch<span style="color:#555">.</span>no_grad():
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>      <span style="color:#09f;font-style:italic">#省略无关代码......</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        <span style="color:#069;font-weight:bold">if</span> x <span style="color:#000;font-weight:bold">is</span> <span style="color:#069;font-weight:bold">None</span>:  <span style="color:#09f;font-style:italic">#初始将x_T设为来自高斯分布的随机噪声</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>            x <span style="color:#555">=</span> torch<span style="color:#555">.</span>randn(n, self<span style="color:#555">.</span>model<span style="color:#555">.</span>in_channels, self<span style="color:#555">.</span>model<span style="color:#555">.</span>resolution, self<span style="color:#555">.</span>model<span style="color:#555">.</span>resolution)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>            x <span style="color:#555">=</span> x<span style="color:#555">.</span>to(self<span style="color:#555">.</span>device) 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> progress_bar(<span style="color:#366">reversed</span>(<span style="color:#366">range</span>(curr_step<span style="color:#555">-</span>n_steps, curr_step)), total<span style="color:#555">=</span>n_steps):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>            t <span style="color:#555">=</span> (torch<span style="color:#555">.</span>ones(n)<span style="color:#555">*</span>i)<span style="color:#555">.</span>to(self<span style="color:#555">.</span>device)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>            <span style="color:#09f;font-style:italic">#调用denoising_step()进行从x_t到x_{t-1}的去噪</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>            x,x0 <span style="color:#555">=</span> denoising_step(x,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>                                 t<span style="color:#555">=</span>t,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>                                 model<span style="color:#555">=</span>self<span style="color:#555">.</span>model,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>                                 logvar<span style="color:#555">=</span>self<span style="color:#555">.</span>logvar,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>                                 sqrt_recip_alphas_cumprod<span style="color:#555">=</span>self<span style="color:#555">.</span>sqrt_recip_alphas_cumprod,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>                                 sqrt_recipm1_alphas_cumprod<span style="color:#555">=</span>self<span style="color:#555">.</span>sqrt_recipm1_alphas_cumprod,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>                                 posterior_mean_coef1<span style="color:#555">=</span>self<span style="color:#555">.</span>posterior_mean_coef1,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>                                 posterior_mean_coef2<span style="color:#555">=</span>self<span style="color:#555">.</span>posterior_mean_coef2,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>                                 return_pred_xstart<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>            callback(x, i, x0<span style="color:#555">=</span>x0) <span style="color:#09f;font-style:italic">#这个定义在第3行的callback啥也没干?(输出为None)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>        <span style="color:#069;font-weight:bold">return</span> x
+</span></span></code></pre></div><p><strong>4.</strong> <code>diffuse()</code>函数于上面的<code>denoise()</code>函数相似，在这里也是循环 $T$ 步，调用<code>diffusion_step()</code>函数进行前向扩散：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">diffuse</span>(self, n, n_steps<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, x<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>, curr_step<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>            progress_bar<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> i, total<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>: i,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>            callback<span style="color:#555">=</span><span style="color:#069;font-weight:bold">lambda</span> x, i: <span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#069;font-weight:bold">with</span> torch<span style="color:#555">.</span>no_grad():
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        <span style="color:#09f;font-style:italic">#省略无关代码......</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> progress_bar(<span style="color:#366">range</span>(curr_step, curr_step<span style="color:#555">+</span>n_steps), total<span style="color:#555">=</span>n_steps):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>            t <span style="color:#555">=</span> (torch<span style="color:#555">.</span>ones(n)<span style="color:#555">*</span>i)<span style="color:#555">.</span>to(self<span style="color:#555">.</span>device)<span style="color:#09f;font-style:italic">#[i,i,...,i] i个i</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>            x <span style="color:#555">=</span> diffusion_step(x, t<span style="color:#555">=</span>t,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>                               sqrt_alphas<span style="color:#555">=</span>self<span style="color:#555">.</span>sqrt_alphas,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>                               sqrt_one_minus_alphas<span style="color:#555">=</span>self<span style="color:#555">.</span>sqrt_one_minus_alphas)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>            callback(x, i<span style="color:#555">+</span><span style="color:#f60">1</span>) <span style="color:#09f;font-style:italic"># 无意义的回调函数?</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        <span style="color:#069;font-weight:bold">return</span> x
+</span></span></code></pre></div><h3 id="三核心函数">三、核心函数</h3>
+<p><strong>1.</strong> <code>denoising_step()</code>方法在<code>denoise()</code>第12行被调用,完成了 $p(x_{t-1}|x_t)$ 去噪采样过程，但并不是直接计算论文中的公式(11)：
+$$x_{t-1}=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{\beta_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))+\sigma_tz$$
+而是通过以下步骤来获取同等效果：</p>
+<ul>
+<li>首先，得到模型预测的噪声 $\epsilon_\theta(x_t,t)$</li>
+<li>接着，由公式 $x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon$ , 计算得到预测的 $x_0 = \frac{1}{\sqrt{\bar{\alpha_t}}}x_t-\sqrt{\frac{1}{\bar\alpha_t}-1}\epsilon_\theta(x_t,t)$</li>
+<li>计算 $q(x_{t-1} | x_t, x_0) = \mathcal{N}(x_{t-1},\tilde{\mu_t}(x_t,x_0),\tilde{\beta_t}I)$ 当中的均值和方差，<br>
+即 $\tilde{\mu_t}(x_t,x_0)=\frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t}x_0+\frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_{t}}x_t$</li>
+<li>利用重参数采样技巧，得到 $x_{t-1}=\tilde{\mu_t}(x_t,x_0)+\sigma_tz$ ,其中$\sigma_t=exp (\frac{1}{2}\log{\tilde{\beta_t}})=\sqrt{\tilde{\beta_t}}$</li>
+</ul>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">denoising_step</span>(x, t, <span style="color:#555">*</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>                   model, <span style="color:#09f;font-style:italic">#预测噪声的模型</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>                   logvar,<span style="color:#09f;font-style:italic">#方差对数</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>                   sqrt_recip_alphas_cumprod,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>                   sqrt_recipm1_alphas_cumprod,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>                   posterior_mean_coef1,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>                   posterior_mean_coef2,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>                   return_pred_xstart<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    <span style="color:#09f;font-style:italic"># 1.得到模型预测的噪声ε_θ               </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>    model_output <span style="color:#555">=</span> model(x, t) 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>    <span style="color:#09f;font-style:italic"># 2.预测x_0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    pred_xstart <span style="color:#555">=</span> (extract(sqrt_recip_alphas_cumprod, t, x<span style="color:#555">.</span>shape)<span style="color:#555">*</span>x <span style="color:#555">-</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>                   extract(sqrt_recipm1_alphas_cumprod, t, x<span style="color:#555">.</span>shape)<span style="color:#555">*</span>model_output)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>    pred_xstart <span style="color:#555">=</span> torch<span style="color:#555">.</span>clamp(pred_xstart, <span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">1</span>)<span style="color:#09f;font-style:italic">#将输入张量各元素限制在[-1,1]</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>    <span style="color:#09f;font-style:italic"># 3. 计算均值于方差 </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>    mean <span style="color:#555">=</span> (extract(posterior_mean_coef1, t, x<span style="color:#555">.</span>shape)<span style="color:#555">*</span>pred_xstart <span style="color:#555">+</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>            extract(posterior_mean_coef2, t, x<span style="color:#555">.</span>shape)<span style="color:#555">*</span>x)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>    logvar <span style="color:#555">=</span> extract(logvar, t, x<span style="color:#555">.</span>shape)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>    <span style="color:#09f;font-style:italic"># 4. 从高斯分布中采样z</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>    noise <span style="color:#555">=</span> torch<span style="color:#555">.</span>randn_like(x) 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>    mask <span style="color:#555">=</span> <span style="color:#f60">1</span><span style="color:#555">-</span>(t<span style="color:#555">==</span><span style="color:#f60">0</span>)<span style="color:#555">.</span>float() <span style="color:#09f;font-style:italic"># t=0时，没有噪声</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>    mask <span style="color:#555">=</span> mask<span style="color:#555">.</span>reshape((x<span style="color:#555">.</span>shape[<span style="color:#f60">0</span>],)<span style="color:#555">+</span>(<span style="color:#f60">1</span>,)<span style="color:#555">*</span>(<span style="color:#366">len</span>(x<span style="color:#555">.</span>shape)<span style="color:#555">-</span><span style="color:#f60">1</span>))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>    sample <span style="color:#555">=</span> mean <span style="color:#555">+</span> mask<span style="color:#555">*</span>torch<span style="color:#555">.</span>exp(<span style="color:#f60">0.5</span><span style="color:#555">*</span>logvar)<span style="color:#555">*</span>noise 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>    sample <span style="color:#555">=</span> sample<span style="color:#555">.</span>float()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>    <span style="color:#069;font-weight:bold">if</span> return_pred_xstart:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>        <span style="color:#069;font-weight:bold">return</span> sample, pred_xstart
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>    <span style="color:#069;font-weight:bold">return</span> sample
+</span></span></code></pre></div><p>   从第12行开始多次出现的<code>extract()</code>是用来提取系数的。<br>
+<strong>5.</strong> <code>diffusion_step</code>方法在<code>diffuse()</code>第8行被调用,完成了 $q(x_t | x_{t-1})$ 扩散采样过程，与去噪过程相比，简单得多：直接计算得到 $x_t=\sqrt{\alpha_t}x_{t-1}+\sqrt{1-\alpha_t}\epsilon_t$ .</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">diffusion_step</span>(x, t, <span style="color:#555">*</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>                   noise<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>                   sqrt_alphas,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>                   sqrt_one_minus_alphas):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    <span style="color:#069;font-weight:bold">if</span> noise <span style="color:#000;font-weight:bold">is</span> <span style="color:#069;font-weight:bold">None</span>: <span style="color:#09f;font-style:italic">#从高斯分布中采样噪声ε</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>        noise <span style="color:#555">=</span> torch<span style="color:#555">.</span>randn_like(x)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>    <span style="color:#069;font-weight:bold">return</span> (extract(sqrt_alphas, t, x<span style="color:#555">.</span>shape) <span style="color:#555">*</span> x <span style="color:#555">+</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>            extract(sqrt_one_minus_alphas, t, x<span style="color:#555">.</span>shape) <span style="color:#555">*</span> noise)
+</span></span></code></pre></div><h4 id="参考链接">参考链接：</h4>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/640975649#:~:text=-%20%60resolution%60%3A%20%E5%9B%BE%E5%83%8F%E7%9A%84%E5%88%86%E8%BE%A8%E7%8E%87%E3%80%82%20-%20%60in_channels%60%3A%20%E8%BE%93%E5%85%A5%E5%9B%BE%E5%83%8F%E7%9A%84%E9%80%9A%E9%81%93%E6%95%B0%E3%80%82%20-,%60out_ch%60%3A%20%E8%BE%93%E5%87%BA%E9%80%9A%E9%81%93%E6%95%B0%E3%80%82%20-%20%60ch%60%3A%20%E5%88%9D%E5%A7%8B%E9%80%9A%E9%81%93%E6%95%B0%E3%80%82%20-%20%60ch_mult%60%3A%20%E9%80%9A%E9%81%93%E6%95%B0%E7%9A%84%E5%80%8D%E6%95%B0%E5%88%97%E8%A1%A8%E3%80%82">[1] 深度学习模型的各种参数（模型结构、数据处理和训练参数）</a></li>
+<li><a href="https://blog.csdn.net/Eric_1993/article/details/127455977">[2]扩散模型 (Diffusion Model) 简要介绍与源码分析(Tensorflow)</a></li>
+</ul>
+
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-tags">
+              <a href="/tags/ddpm/">
+                DDPM
+              </a>
+            </div>
+            
+            <div class="post-tags">
+              <a href="/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/">
+                扩散模型
+              </a>
+            </div>
+            
+            <div class="post-tags">
+              <a href="/tags/%E4%BB%A3%E7%A0%81%E7%90%86%E8%A7%A3/">
+                代码理解
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
+          </div>
+
+          
+
+<div class="related-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/">DDPM代码详解</a></li>
+    
+    <li><a href="/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">DDIM论文理解</a></li>
+    
+  </ul>
+</div>
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>代码理解 on Advance&#39;s blog</title>
+    <link>https://Advance2020.github.io/tags/%E4%BB%A3%E7%A0%81%E7%90%86%E8%A7%A3/</link>
+    <description>Recent content in 代码理解 on Advance&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>cn</language>
+    <lastBuildDate>Sun, 03 Dec 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/tags/%E4%BB%A3%E7%A0%81%E7%90%86%E8%A7%A3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DDPM基础代码解析</title>
+      <link>https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Sun, 03 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <description>本文所分析的DDPM论文以及代码的相关信息如下:
+Denoising Diffusion Probabilistic Models (论文) 直接调用预训练好的扩散模型demo版（Pytorch） 一、 demo.py 首先由__init__初始化一些显示界面的参数，如进度条。 然后进入main()函数，在main()函数中完成了以下任务:
+数据集、ema多选框、扩散步骤的预设置 get_state()实例化扩散过程，包括加载预训练的扩散模型、$x_T$、以及设定扩散步骤 实时显示当前图像 $x_t$ 和 cur_step 根据页面触发的动作Denoise和Diffuse来分别调用去噪函数和扩散函数，如下图： 1def main(): 2 #无关代码已省略 ...... 3 name = st.sidebar.radio(&amp;#34;Model&amp;#34;, (&amp;#34;cifar10&amp;#34;, &amp;#34;lsun_bedroom&amp;#34;, &amp;#34;lsun_cat&amp;#34;, &amp;#34;lsun_church&amp;#34;)) 4 ema = st.sidebar.checkbox(&amp;#34;ema&amp;#34;, value=True) 5 state = get_state(name, ema=ema) 6 diffusion = state[&amp;#34;diffusion&amp;#34;] 7 #&amp;#34;Number of steps&amp;#34; 默认为1000 8 n_steps = st.sidebar.number_input(&amp;#34;Number of steps&amp;#34;, min_value=1,max_value=diffusion.num_timesteps,value=diffusion.num_timesteps) 9 def callback(x, i, x0=None): 10 if show_x0 and x0 is not None: 11 x = x0 12 output.</description>
+    </item>
+    
+    <item>
+      <title>DDPM代码详解</title>
+      <link>https://Advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</guid>
+      <description>1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
+从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0+\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0+\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
+从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
+Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
+以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
+1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.</description>
+    </item>
+    
+  </channel>
+</rss>
