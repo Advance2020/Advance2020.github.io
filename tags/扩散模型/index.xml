@@ -6,7 +6,20 @@
     <description>Recent content in 扩散模型 on Advance&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Sun, 03 Dec 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Dec 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://Advance2020.github.io/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Guided-Diffusion代码理解</title>
+      <link>https://Advance2020.github.io/posts/study/guided-diffusion%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Mon, 25 Dec 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Advance2020.github.io/posts/study/guided-diffusion%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <description>本文所分析的DDPM论文以及代码的相关信息如下:
+Diffusion Models Beat GANs on Image Synthesis https://github.com/openai/guided-diffusion 一、算法流程 论文核心方法： 在扩散模型上作出两个方面的改进提升，即改进模型架构(Architecture Improvements)和使用分类器引导（Classifier Guidance），从而在FID上获得优于GAN的表现。
+1.通过设计一系列的消融实验，比较各部分改进对FID的影响，最终确定使用架构如下： 2.使用分类器引导的DDPM和DDIM的算法流程分别如下： 二、 代码分析 2.1 分类引导采样流程 采样步骤包括：
+加载UNet模型 (预测噪声$\theta$) 和扩散模型 ($\mu_\theta(x_t),\sigma_\theta(x_t)$)； 加载预训练好的分类噪声图像的分类器 $p_\phi(y|x_t)$； 进行DDPM或DDIM采样过程，并加入引导梯度； 将样本转化为图片并保存。 相关核心函数调用见下图（以DDPM采样为例）： classifier_sample.py代码如下：
+1#使用一个噪声图像分类器来引导采样过程，从而生成更逼真的图像 2#非核心代码已省略.... 3def main(): 4 logger.log(&amp;#34;creating model and diffusion...&amp;#34;) 5 model, diffusion = create_model_and_diffusion(#初始化UNet模型和扩散模型 6 **args_to_dict(args, model_and_diffusion_defaults().keys())) 7 model.load_state_dict( 8 dist_util.load_state_dict(args.model_path, map_location=&amp;#34;cpu&amp;#34;)) 9 model.to(dist_util.dev()) 10 if args.use_fp16: 11 model.convert_to_fp16()#使用浮点进行原始模型的训练推理，float16加快速度 12 model.eval()#.train()模式主要用于激活某些特定于训练的层如Dropout和BatchNorm） 13 # 而.eval()模式则确保这些层在评估或测试时不激活 14 logger.log(&amp;#34;loading classifier...&amp;#34;) 15 classifier = create_classifier(**args_to_dict(args, classifier_defaults().</description>
+    </item>
+    
     <item>
       <title>DDPM基础代码解析</title>
       <link>https://Advance2020.github.io/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
@@ -26,7 +39,7 @@ Denoising Diffusion Probabilistic Models (论文) 直接调用预训练好的扩
       <guid>https://Advance2020.github.io/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/</guid>
       <description>1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
 从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0+\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0+\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
-从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
+从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
 Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
 以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
 1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.</description>
@@ -44,8 +57,9 @@ Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:htt
 二、论文理解 1. 背景与目的 已经有多种模型都在图片生成上展示出了或多或少的优势。其中GAN比基于似然的模型如变分自动编码器、自回归模型表现出更高的样本质量。但是同时，GAN也具有一些不可忽视的缺点：训练过程不稳定；在某些情况下，GAN可能会遇到模式崩溃，导致生成的样本质量下降。
 针对这一不足，基于马尔可夫链的迭代生成模型应运而生，如DDPM和噪声条件评分模型，它们不需要对抗训练，也同样可以生成较好质量的样本。但是同样也存在一个关键的缺点——迭代次数多，生成样本的速度慢。
 为了提高采样速度，在DDPM的启发下，在损失目标函数相同的情况下，作出了相应的改进，提出了DDIM。DDIM相较于DDPM的优点：
-在保证提高10到50倍的采样速度的同时，有更高的生成质量 有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。 利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值 2. 核心方法 以生成过程为切入点，一个关键的观察结果是，Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。 由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。 2.1 非马尔可夫链的前向过程 推理分布族 Q： 其中 qσ (xT |x0) = N (√αT x0, (1 − αT )I)且t&amp;gt;1， 由贝叶斯公式可以得出： 这里每个 xt 都可以依赖于 xt−1 和 x0，因此前向过程不再是马尔可夫的。 当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）
-2.2 生成过程和统一变分推理目标 （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，σ 的大小控制着前向过程的随机性；先由给定的xt 预测出x0(见公式9) 然后得到生成过程 通过样本 xt 生成样本 xt−1： 通过改变σ 的可以改变生成过程，当σt = √(1 − αt−1)/(1 − αt)√1 − αt/αt−1时，就是马尔可夫链的DDPM。（！！！公式推理）</description>
+在保证提高10到50倍的采样速度的同时，有更高的生成质量 有一致性属性——在初始潜在变量相似的情况下，由不同长度的马尔可夫链生成的样本具有相似的高层特征。 利用“一致性”，可以通过初始潜在变量来进行在语义上有意义的图像插值 2. 核心方法 以生成过程为切入点，一个关键的观察结果是，Lγ 形式的 DDPM 目标仅取决于边际值q(xt|x0)，而不直接取决于联合 q(x1:T |x0)。由此得到启发：DDPM这个隐变量模型可以有很多推理分布来选择，只要推理分布满足边缘分布条件（扩散过程的特性）即可，而且这些推理过程并不一定要是马尔卡夫链。 由于有许多具有相同边际的推理分布，因此可以找出非马尔可夫的替代推理过程，从而产生新的生成过程（图 1，右）。这些非马尔可夫推理过程产生与 DDPM 相同的代理目标函数。 2.1 非马尔可夫链的前向过程 推理分布族 Q： 其中 $q_\sigma(x_T|x_0) = \mathcal{N}(\sqrt{\alpha_T}x_0,(1-\alpha_T)I)$ 且 $t&amp;gt;1$， 由贝叶斯公式可以得出： 这里每个 xt 都可以依赖于 xt−1 和 x0，因此前向过程不再是马尔可夫的。 当 σ → 0 时，达到了一种极端情况，只要在某个 t 内观察 x0 和 xt，那么 xt−1 就已知并固定。（！！！公式代入推理）
+2.2 生成过程和统一变分推理目标 （1）生成过程pθ (x0:T )：每一步的去噪都是从过程qσ(xt−1|xt, x0)中学习，σ 的大小控制着前向过程的随机性；
+先由给定的xt 预测出x0(见公式9) 然后得到生成过程 通过样本 xt 生成样本 xt−1： 通过改变σ 的可以改变生成过程，当$σ_t = \sqrt{(1 − α_{t−1})/(1 − α_t)}\sqrt{1 − α_t/α_{t−1}}$时，就是马尔可夫链的DDPM。（！！！公式推理）</description>
     </item>
     
   </channel>

@@ -119,7 +119,7 @@ code.has-jax {
       "articleSection" : "posts",
       "name" : "DDPM代码详解",
       "headline" : "DDPM代码详解",
-      "description" : "1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：\n从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\\epsilon \\in \\mathcal N(0,I)$ 调用模型预估 $\\epsilon_{\\theta}(\\sqrt{\\bar{\\alpha _t}}x_0\u002b\\sqrt{(1-\\bar{\\alpha_t})}\\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\\parallel \\epsilon_t-\\epsilon_{\\theta}(\\sqrt{\\bar \\alpha_t}x_0\u002b\\sqrt{(1-\\bar\\alpha_t)}\\epsilon_t,t)\\parallel^2$ 逆向阶段采样如下步骤进行采样：\n从高斯分布采样$x_T$ 按照 $T,\u0026hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t\u0026gt;1$, 从高斯分布中采样 $z\\sim \\mathcal{N}(0,I)$ 学习出均值 $\\mu_\\theta(x_t,t)=\\frac{1}{\\sqrt{\\alpha_t}}(x_t-\\frac{1-\\alpha_t}{\\sqrt{1-\\bar\\alpha_t}}\\epsilon_\\theta(x_t,t))$, 学习均方差 $\\sigma_t=\\sqrt{\\frac{1-\\bar\\alpha_{t-1}}{1-\\bar\\alpha_t}\\cdot\\beta_t}$ , 即 $\\sqrt{\\tilde{\\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\\mu_\\theta(x_t,t)\u002b\\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:\nDenoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https:\/\/github.com\/tqch\/ddpm-torch 训练阶段\n以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:\n1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.",
+      "description" : "1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：\n从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\\epsilon \\in \\mathcal N(0,I)$ 调用模型预估 $\\epsilon_{\\theta}(\\sqrt{\\bar{\\alpha _t}}x_0\u002b\\sqrt{(1-\\bar{\\alpha_t})}\\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\\parallel \\epsilon_t-\\epsilon_{\\theta}(\\sqrt{\\bar \\alpha_t}x_0\u002b\\sqrt{(1-\\bar\\alpha_t)}\\epsilon_t,t)\\parallel^2$ 逆向阶段采样如下步骤进行采样：\n从高斯分布采样$x_T$ 按照 $T,\u0026hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t\u0026gt;1$, 从高斯分布中采样 $z\\sim \\mathcal{N}(0,I)$ 学习出均值 $\\mu_\\theta(x_t,t)=\\frac{1}{\\sqrt{\\alpha_t}}(x_t-\\frac{1-\\alpha_t}{\\sqrt{1-\\bar\\alpha_t}}\\epsilon_\\theta(x_t,t))$, 学习方差 $\\sigma_t=\\sqrt{\\frac{1-\\bar\\alpha_{t-1}}{1-\\bar\\alpha_t}\\cdot\\beta_t}$ , 即 $\\sqrt{\\tilde{\\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\\mu_\\theta(x_t,t)\u002b\\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:\nDenoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https:\/\/github.com\/tqch\/ddpm-torch 训练阶段\n以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:\n1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self.",
       "inLanguage" : "en-US",
       "author" : "Advance",
       "creator" : "Advance",
@@ -138,13 +138,13 @@ code.has-jax {
   <meta property="og:type" content="article" />
   <meta property="og:description" content="1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
 从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0&#43;\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0&#43;\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
-从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)&#43;\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
+从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)&#43;\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
 Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
 以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
 1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self." />
   <meta name="description" content="1.算法流程 DDPM的算法流程如下： 训练阶段重复以下步骤：
 从数据集中采样$x_0$ 随机选取 time step $t$ 生成高斯噪声 $\epsilon \in \mathcal N(0,I)$ 调用模型预估 $\epsilon_{\theta}(\sqrt{\bar{\alpha _t}}x_0&#43;\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$ 计算噪声之间的 MSE loss: $\parallel \epsilon_t-\epsilon_{\theta}(\sqrt{\bar \alpha_t}x_0&#43;\sqrt{(1-\bar\alpha_t)}\epsilon_t,t)\parallel^2$ 逆向阶段采样如下步骤进行采样：
-从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)&#43;\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
+从高斯分布采样$x_T$ 按照 $T,&amp;hellip;,1$ 的顺序进行迭代： 如果 $t=1$,令$z=0$; 如果 $t&amp;gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$ 学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$ 通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)&#43;\sigma_tz$ 经过以上过程的迭代，最终恢复 $x_0$ . 2.源码分析 DDPM 文章以及代码的相关信息如下:
 Denoising Diffusion Probabilistic Models 论文 本文分析的Pytorch源码:https://github.com/tqch/ddpm-torch 训练阶段
 以cifar10数据集为例，在 train.py 中进行前向传播计算Loss:
 1def train(self, evaluator=None, chkpt_path=None, image_dir=None): 2 #无关代码已省略 3 #...... 4 global_steps = 0 5 for e in range(self." />
@@ -193,7 +193,7 @@ _t}}x_0+\sqrt{(1-\bar{\alpha_t})}\epsilon_t,t)$</li>
 <li>按照 $T,&hellip;,1$ 的顺序进行迭代：
 <ul>
 <li>如果 $t=1$,令$z=0$; 如果 $t&gt;1$, 从高斯分布中采样 $z\sim \mathcal{N}(0,I)$</li>
-<li>学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习均方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$</li>
+<li>学习出均值 $\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon_\theta(x_t,t))$, 学习方差 $\sigma_t=\sqrt{\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\cdot\beta_t}$ , 即 $\sqrt{\tilde{\beta}_t}$</li>
 <li>通过重参数技巧采样 $x_{t-1}=\mu_\theta(x_t,t)+\sigma_tz$</li>
 </ul>
 </li>

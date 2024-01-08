@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<header>
+  <div class="header-title">
+    <a href="/"
+      >Advance Yang</a
+    >
+  </div>
+  <div class="header-subtitle">吾生也有涯，而知也无涯。</div>
+</header>
+<div class="row end-md center-xs header-items">
+  
+  <div class="header-item">
+    <a href="https://user.qzone.qq.com/2167506238/infocenter" target="_blank">QZone</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="https://github.com/Advance2020" target="_blank">Github</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="" target="_blank">About</a>
+  </div>
+  
+</div>
+<div class="row end-xs">
+   
+  <div class="lang-switch col-xs-3 col-xs-offset-9">
+    <a href="/en/">English</a>
+  </div>
+   
+</div>
+<div class="header-line"></div>
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">Guided-Diffusion代码理解</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2023-12-25 00:00:00 UTC">
+                25 Dec 2023
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://advance2020.github.io/">@Advance</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.117.0">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Advance" />
+  <meta property="og:url" content="https://Advance2020.github.io/posts/study/guided-diffusion%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" />
+  <link rel="canonical" href="https://Advance2020.github.io/posts/study/guided-diffusion%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" /><link rel="alternate" type="application/atom+xml" href="https://Advance2020.github.ioindex.xml" title="Advance&#39;s blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/Advance2020.github.io"
+      },
+      "articleSection" : "posts",
+      "name" : "Guided-Diffusion代码理解",
+      "headline" : "Guided-Diffusion代码理解",
+      "description" : "本文所分析的DDPM论文以及代码的相关信息如下:\nDiffusion Models Beat GANs on Image Synthesis https:\/\/github.com\/openai\/guided-diffusion 一、算法流程 论文核心方法： 在扩散模型上作出两个方面的改进提升，即改进模型架构(Architecture Improvements)和使用分类器引导（Classifier Guidance），从而在FID上获得优于GAN的表现。\n1.通过设计一系列的消融实验，比较各部分改进对FID的影响，最终确定使用架构如下： 2.使用分类器引导的DDPM和DDIM的算法流程分别如下： 二、 代码分析 2.1 分类引导采样流程 采样步骤包括：\n加载UNet模型 (预测噪声$\\theta$) 和扩散模型 ($\\mu_\\theta(x_t),\\sigma_\\theta(x_t)$)； 加载预训练好的分类噪声图像的分类器 $p_\\phi(y|x_t)$； 进行DDPM或DDIM采样过程，并加入引导梯度； 将样本转化为图片并保存。 相关核心函数调用见下图（以DDPM采样为例）： classifier_sample.py代码如下：\n1#使用一个噪声图像分类器来引导采样过程，从而生成更逼真的图像 2#非核心代码已省略.... 3def main(): 4 logger.log(\u0026#34;creating model and diffusion...\u0026#34;) 5 model, diffusion = create_model_and_diffusion(#初始化UNet模型和扩散模型 6 **args_to_dict(args, model_and_diffusion_defaults().keys())) 7 model.load_state_dict( 8 dist_util.load_state_dict(args.model_path, map_location=\u0026#34;cpu\u0026#34;)) 9 model.to(dist_util.dev()) 10 if args.use_fp16: 11 model.convert_to_fp16()#使用浮点进行原始模型的训练推理，float16加快速度 12 model.eval()#.train()模式主要用于激活某些特定于训练的层如Dropout和BatchNorm） 13 # 而.eval()模式则确保这些层在评估或测试时不激活 14 logger.log(\u0026#34;loading classifier...\u0026#34;) 15 classifier = create_classifier(**args_to_dict(args, classifier_defaults().",
+      "inLanguage" : "en-US",
+      "author" : "Advance",
+      "creator" : "Advance",
+      "publisher": "Advance",
+      "accountablePerson" : "Advance",
+      "copyrightHolder" : "Advance",
+      "copyrightYear" : "2023",
+      "datePublished": "2023-12-25 00:00:00 \u002b0000 UTC",
+      "dateModified" : "2023-12-25 00:00:00 \u002b0000 UTC",
+      "url" : "https:\/\/Advance2020.github.io\/posts\/study\/guided-diffusion%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90\/",
+      "keywords" : [ "DDPM","扩散模型","代码理解", ]
+  }
+</script>
+<title>Guided-Diffusion代码理解</title>
+  <meta property="og:title" content="Guided-Diffusion代码理解" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="本文所分析的DDPM论文以及代码的相关信息如下:
+Diffusion Models Beat GANs on Image Synthesis https://github.com/openai/guided-diffusion 一、算法流程 论文核心方法： 在扩散模型上作出两个方面的改进提升，即改进模型架构(Architecture Improvements)和使用分类器引导（Classifier Guidance），从而在FID上获得优于GAN的表现。
+1.通过设计一系列的消融实验，比较各部分改进对FID的影响，最终确定使用架构如下： 2.使用分类器引导的DDPM和DDIM的算法流程分别如下： 二、 代码分析 2.1 分类引导采样流程 采样步骤包括：
+加载UNet模型 (预测噪声$\theta$) 和扩散模型 ($\mu_\theta(x_t),\sigma_\theta(x_t)$)； 加载预训练好的分类噪声图像的分类器 $p_\phi(y|x_t)$； 进行DDPM或DDIM采样过程，并加入引导梯度； 将样本转化为图片并保存。 相关核心函数调用见下图（以DDPM采样为例）： classifier_sample.py代码如下：
+1#使用一个噪声图像分类器来引导采样过程，从而生成更逼真的图像 2#非核心代码已省略.... 3def main(): 4 logger.log(&amp;#34;creating model and diffusion...&amp;#34;) 5 model, diffusion = create_model_and_diffusion(#初始化UNet模型和扩散模型 6 **args_to_dict(args, model_and_diffusion_defaults().keys())) 7 model.load_state_dict( 8 dist_util.load_state_dict(args.model_path, map_location=&amp;#34;cpu&amp;#34;)) 9 model.to(dist_util.dev()) 10 if args.use_fp16: 11 model.convert_to_fp16()#使用浮点进行原始模型的训练推理，float16加快速度 12 model.eval()#.train()模式主要用于激活某些特定于训练的层如Dropout和BatchNorm） 13 # 而.eval()模式则确保这些层在评估或测试时不激活 14 logger.log(&amp;#34;loading classifier...&amp;#34;) 15 classifier = create_classifier(**args_to_dict(args, classifier_defaults()." />
+  <meta name="description" content="本文所分析的DDPM论文以及代码的相关信息如下:
+Diffusion Models Beat GANs on Image Synthesis https://github.com/openai/guided-diffusion 一、算法流程 论文核心方法： 在扩散模型上作出两个方面的改进提升，即改进模型架构(Architecture Improvements)和使用分类器引导（Classifier Guidance），从而在FID上获得优于GAN的表现。
+1.通过设计一系列的消融实验，比较各部分改进对FID的影响，最终确定使用架构如下： 2.使用分类器引导的DDPM和DDIM的算法流程分别如下： 二、 代码分析 2.1 分类引导采样流程 采样步骤包括：
+加载UNet模型 (预测噪声$\theta$) 和扩散模型 ($\mu_\theta(x_t),\sigma_\theta(x_t)$)； 加载预训练好的分类噪声图像的分类器 $p_\phi(y|x_t)$； 进行DDPM或DDIM采样过程，并加入引导梯度； 将样本转化为图片并保存。 相关核心函数调用见下图（以DDPM采样为例）： classifier_sample.py代码如下：
+1#使用一个噪声图像分类器来引导采样过程，从而生成更逼真的图像 2#非核心代码已省略.... 3def main(): 4 logger.log(&amp;#34;creating model and diffusion...&amp;#34;) 5 model, diffusion = create_model_and_diffusion(#初始化UNet模型和扩散模型 6 **args_to_dict(args, model_and_diffusion_defaults().keys())) 7 model.load_state_dict( 8 dist_util.load_state_dict(args.model_path, map_location=&amp;#34;cpu&amp;#34;)) 9 model.to(dist_util.dev()) 10 if args.use_fp16: 11 model.convert_to_fp16()#使用浮点进行原始模型的训练推理，float16加快速度 12 model.eval()#.train()模式主要用于激活某些特定于训练的层如Dropout和BatchNorm） 13 # 而.eval()模式则确保这些层在评估或测试时不激活 14 logger.log(&amp;#34;loading classifier...&amp;#34;) 15 classifier = create_classifier(**args_to_dict(args, classifier_defaults()." />
+  <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
+  
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body blockquote{margin:0;padding:0 1em;color:#57606a;border-left:.25em solid #d0d7de}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;font-weight:500;color:#c7254e;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;color:inherit;background-color:inherit;border:0}.Chinese .markdown-body{line-height:140%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.5;text-justify:ideographic;margin-bottom:1em}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{text-align:center}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Advance&#39;s blog">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+   
+        <div class="post-content markdown-body">
+          
+          <p>本文所分析的DDPM论文以及代码的相关信息如下:</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2105.05233.pdf">Diffusion Models Beat GANs on Image Synthesis</a></li>
+<li><a href="https://github.com/openai/guided-diffusion">https://github.com/openai/guided-diffusion</a></li>
+</ul>
+<h3 id="一算法流程">一、<strong>算法流程</strong></h3>
+<p><strong>论文核心方法：</strong> 在扩散模型上作出两个方面的改进提升，即<u>改进模型架构</u>(Architecture Improvements)和使用<u>分类器引导</u>（Classifier Guidance），从而在FID上获得优于GAN的表现。</p>
+<p>  1.通过设计一系列的消融实验，比较各部分改进对FID的影响，最终确定使用架构如下：
+<img src="/img/GDDPM/jiagou.png" alt=""></p>
+<p>  2.使用分类器引导的DDPM和DDIM的算法流程分别如下：
+<img src="/img/GDDPM/classifier.png" alt="">
+<img src="/img/GDDPM/classifier2.png" alt=""></p>
+<h3 id="二-代码分析">二、 <strong>代码分析</strong></h3>
+<h4 id="21-分类引导采样流程">2.1 分类引导采样流程</h4>
+<p>采样步骤包括：</p>
+<ul>
+<li>加载UNet模型 (预测噪声$\theta$) 和扩散模型 ($\mu_\theta(x_t),\sigma_\theta(x_t)$)；</li>
+<li>加载预训练好的分类噪声图像的分类器 $p_\phi(y|x_t)$；</li>
+<li>进行DDPM或DDIM采样过程，并加入引导梯度；</li>
+<li>将样本转化为图片并保存。</li>
+</ul>
+<p>相关核心函数调用见下图（以DDPM采样为例）：
+<img src="/img/GDDPM/class_sample.png" alt="">
+<code>classifier_sample.py</code>代码如下：</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#09f;font-style:italic">#使用一个噪声图像分类器来引导采样过程，从而生成更逼真的图像</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#09f;font-style:italic">#非核心代码已省略....</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main</span>():
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    logger<span style="color:#555">.</span>log(<span style="color:#c30">&#34;creating model and diffusion...&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    model, diffusion <span style="color:#555">=</span> create_model_and_diffusion(<span style="color:#09f;font-style:italic">#初始化UNet模型和扩散模型</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        <span style="color:#555">**</span>args_to_dict(args, model_and_diffusion_defaults()<span style="color:#555">.</span>keys())) 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    model<span style="color:#555">.</span>load_state_dict(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        dist_util<span style="color:#555">.</span>load_state_dict(args<span style="color:#555">.</span>model_path, map_location<span style="color:#555">=</span><span style="color:#c30">&#34;cpu&#34;</span>))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    model<span style="color:#555">.</span>to(dist_util<span style="color:#555">.</span>dev())
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>    <span style="color:#069;font-weight:bold">if</span> args<span style="color:#555">.</span>use_fp16:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        model<span style="color:#555">.</span>convert_to_fp16()<span style="color:#09f;font-style:italic">#使用浮点进行原始模型的训练推理，float16加快速度</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    model<span style="color:#555">.</span>eval()<span style="color:#09f;font-style:italic">#.train()模式主要用于激活某些特定于训练的层如Dropout和BatchNorm）</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>    <span style="color:#09f;font-style:italic"># 而.eval()模式则确保这些层在评估或测试时不激活</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>    logger<span style="color:#555">.</span>log(<span style="color:#c30">&#34;loading classifier...&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>    classifier <span style="color:#555">=</span> create_classifier(<span style="color:#555">**</span>args_to_dict(args, classifier_defaults()<span style="color:#555">.</span>keys()))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>    <span style="color:#09f;font-style:italic">#.... 与加载model类似</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>    logger<span style="color:#555">.</span>log(<span style="color:#c30">&#34;sampling...&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">model_fn</span>(x, t, y<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):<span style="color:#09f;font-style:italic">#预测噪声</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>        <span style="color:#069;font-weight:bold">assert</span> y <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>        <span style="color:#069;font-weight:bold">return</span> model(x, t, y <span style="color:#069;font-weight:bold">if</span> args<span style="color:#555">.</span>class_cond <span style="color:#069;font-weight:bold">else</span> <span style="color:#069;font-weight:bold">None</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>    all_images <span style="color:#555">=</span> []
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>    all_labels <span style="color:#555">=</span> []
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>    <span style="color:#069;font-weight:bold">while</span> <span style="color:#366">len</span>(all_images) <span style="color:#555">*</span> args<span style="color:#555">.</span>batch_size <span style="color:#555">&lt;</span> args<span style="color:#555">.</span>num_samples:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>        model_kwargs <span style="color:#555">=</span> {}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>        classes <span style="color:#555">=</span> th<span style="color:#555">.</span>randint(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>            low<span style="color:#555">=</span><span style="color:#f60">0</span>, high<span style="color:#555">=</span>NUM_CLASSES, size<span style="color:#555">=</span>(args<span style="color:#555">.</span>batch_size,), device<span style="color:#555">=</span>dist_util<span style="color:#555">.</span>dev()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>        )<span style="color:#09f;font-style:italic">#输出长度为batch_size的列表，每个元素在(0~num_classes)之间</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>        model_kwargs[<span style="color:#c30">&#34;y&#34;</span>] <span style="color:#555">=</span> classes
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>        <span style="color:#09f;font-style:italic">#若存在，在Unet模型计算时会作为条件嵌入与时间嵌入叠加，以条件信息指导模型生成</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>        sample_fn <span style="color:#555">=</span> (
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span>            diffusion<span style="color:#555">.</span>p_sample_loop <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> args<span style="color:#555">.</span>use_ddim <span style="color:#069;font-weight:bold">else</span> diffusion<span style="color:#555">.</span>ddim_sample_loop
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>        ) <span style="color:#09f;font-style:italic"># 选择具体采样函数，是否使用ddim方法</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>        sample <span style="color:#555">=</span> sample_fn(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>            model_fn, <span style="color:#09f;font-style:italic">#预测噪声的UNet模型</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span>            (args<span style="color:#555">.</span>batch_size, <span style="color:#f60">3</span>, args<span style="color:#555">.</span>image_size, args<span style="color:#555">.</span>image_size),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span><span>            <span style="color:#09f;font-style:italic"># 此为采样时图像的尺寸[batch_size, 3, image_size, image_size]</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span><span>            clip_denoised<span style="color:#555">=</span>args<span style="color:#555">.</span>clip_denoised,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span><span>            model_kwargs<span style="color:#555">=</span>model_kwargs,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span><span>            cond_fn<span style="color:#555">=</span>cond_fn, <span style="color:#09f;font-style:italic">#分类器引导</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span>            device<span style="color:#555">=</span>dist_util<span style="color:#555">.</span>dev(),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span>        )
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span><span>        <span style="color:#09f;font-style:italic"># 将图片每个位置的数值转为0~255区间内，即还原为图片</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span><span>        sample <span style="color:#555">=</span> ((sample <span style="color:#555">+</span> <span style="color:#f60">1</span>) <span style="color:#555">*</span> <span style="color:#f60">127.5</span>)<span style="color:#555">.</span>clamp(<span style="color:#f60">0</span>, <span style="color:#f60">255</span>)<span style="color:#555">.</span>to(th<span style="color:#555">.</span>uint8)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span>        sample <span style="color:#555">=</span> sample<span style="color:#555">.</span>permute(<span style="color:#f60">0</span>, <span style="color:#f60">2</span>, <span style="color:#f60">3</span>, <span style="color:#f60">1</span>) <span style="color:#09f;font-style:italic"># [batch_size, image_size, image_size, 3]</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45</span><span>        sample <span style="color:#555">=</span> sample<span style="color:#555">.</span>contiguous()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47</span><span>        <span style="color:#09f;font-style:italic"># 将多卡中的采样的样本图片和推定的label集合</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48</span><span>        gathered_samples <span style="color:#555">=</span> [th<span style="color:#555">.</span>zeros_like(sample) <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(dist<span style="color:#555">.</span>get_world_size())]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49</span><span>        dist<span style="color:#555">.</span>all_gather(gathered_samples, sample)  <span style="color:#09f;font-style:italic"># gather not supported with NCCL</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50</span><span>        all_images<span style="color:#555">.</span>extend([sample<span style="color:#555">.</span>cpu()<span style="color:#555">.</span>numpy() <span style="color:#069;font-weight:bold">for</span> sample <span style="color:#000;font-weight:bold">in</span> gathered_samples])
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51</span><span>        gathered_labels <span style="color:#555">=</span> [th<span style="color:#555">.</span>zeros_like(classes) <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(dist<span style="color:#555">.</span>get_world_size())]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52</span><span>        dist<span style="color:#555">.</span>all_gather(gathered_labels, classes)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53</span><span>        all_labels<span style="color:#555">.</span>extend([labels<span style="color:#555">.</span>cpu()<span style="color:#555">.</span>numpy() <span style="color:#069;font-weight:bold">for</span> labels <span style="color:#000;font-weight:bold">in</span> gathered_labels])
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54</span><span>        logger<span style="color:#555">.</span>log(<span style="color:#c30">f</span><span style="color:#c30">&#34;created </span><span style="color:#a00">{</span><span style="color:#366">len</span>(all_images) <span style="color:#555">*</span> args<span style="color:#555">.</span>batch_size<span style="color:#a00">}</span><span style="color:#c30"> samples&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56</span><span>    arr <span style="color:#555">=</span> np<span style="color:#555">.</span>concatenate(all_images, axis<span style="color:#555">=</span><span style="color:#f60">0</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57</span><span>    arr <span style="color:#555">=</span> arr[: args<span style="color:#555">.</span>num_samples]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58</span><span>    label_arr <span style="color:#555">=</span> np<span style="color:#555">.</span>concatenate(all_labels, axis<span style="color:#555">=</span><span style="color:#f60">0</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59</span><span>    label_arr <span style="color:#555">=</span> label_arr[: args<span style="color:#555">.</span>num_samples]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60</span><span>    <span style="color:#069;font-weight:bold">if</span> dist<span style="color:#555">.</span>get_rank() <span style="color:#555">==</span> <span style="color:#f60">0</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61</span><span>        shape_str <span style="color:#555">=</span> <span style="color:#c30">&#34;x&#34;</span><span style="color:#555">.</span>join([<span style="color:#366">str</span>(x) <span style="color:#069;font-weight:bold">for</span> x <span style="color:#000;font-weight:bold">in</span> arr<span style="color:#555">.</span>shape])<span style="color:#09f;font-style:italic"># 10x64x64x3</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62</span><span>        out_path <span style="color:#555">=</span> os<span style="color:#555">.</span>path<span style="color:#555">.</span>join(logger<span style="color:#555">.</span>get_dir(), <span style="color:#c30">f</span><span style="color:#c30">&#34;samples_</span><span style="color:#a00">{</span>shape_str<span style="color:#a00">}</span><span style="color:#c30">.npz&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63</span><span>        logger<span style="color:#555">.</span>log(<span style="color:#c30">f</span><span style="color:#c30">&#34;saving to </span><span style="color:#a00">{</span>out_path<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64</span><span>        np<span style="color:#555">.</span>savez(out_path, arr, label_arr)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65</span><span>    dist<span style="color:#555">.</span>barrier()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66</span><span>    logger<span style="color:#555">.</span>log(<span style="color:#c30">&#34;sampling complete&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67</span><span><span style="color:#09f;font-style:italic">#......初始化所需参数</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68</span><span><span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69</span><span>    main()
+</span></span></code></pre></div><p>其中，关键函数<code>cond_fn</code>用于生成引导梯度:</p>
+<div class="highlight line-numbers"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">cond_fn</span>(x, t, y<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):<span style="color:#09f;font-style:italic">#核心函数，返回分类器引导梯度</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#069;font-weight:bold">assert</span> y <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#069;font-weight:bold">with</span> th<span style="color:#555">.</span>enable_grad():
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>        x_in <span style="color:#555">=</span> x<span style="color:#555">.</span>detach()<span style="color:#555">.</span>requires_grad_(<span style="color:#069;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>        logits <span style="color:#555">=</span> classifier(x_in, t)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>        log_probs <span style="color:#555">=</span> F<span style="color:#555">.</span>log_softmax(logits, dim<span style="color:#555">=-</span><span style="color:#f60">1</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>        selected <span style="color:#555">=</span> log_probs[<span style="color:#366">range</span>(<span style="color:#366">len</span>(logits)), y<span style="color:#555">.</span>view(<span style="color:#555">-</span><span style="color:#f60">1</span>)]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>        <span style="color:#069;font-weight:bold">return</span> th<span style="color:#555">.</span>autograd<span style="color:#555">.</span>grad(selected<span style="color:#555">.</span>sum(), x_in)[<span style="color:#f60">0</span>] <span style="color:#555">*</span> args<span style="color:#555">.</span>classifier_scale
+</span></span></code></pre></div><p>这里的<code>t</code>是当前时间步，<code>x</code>是当前步的去噪结果图，<code>y</code>是类别索引。计算分类梯度的过程如下：</p>
+<ul>
+<li>首先把<code>x</code>和原始的梯度断开<code>(detach)</code>，准备计算分类器的梯度；</li>
+<li>把<code>x_in</code>和<code>t</code>都输入到分类器中，得到分类器预测的类别<code>logits</code>：
+<ul>
+<li><u>分类带噪声图像</u>，输入图像$x_t$的同时也要输入当前时间步t，告知分类器当前噪声的强度；</li>
+<li>故在分类引导中，不用重新训练 diffusion 模型，但要单独训练一个噪声图像分类器。</li>
+</ul>
+</li>
+<li>再把预测的类别<code>logits</code>过一下<code>softmax</code>，得到各类别的概率<code>log_probs</code>；</li>
+<li>从<code>log_probs</code>中取出我们指定的类别<code>y</code>对应的概率，即<code>selected</code>；</li>
+<li>最后将<code>selected</code>中各个目标类别的概率值加在一起(因为一次要处理batch_size张图片)，希望该值越大越好，取该值对于<code>x</code>的梯度，即为分类器引导的梯度。</li>
+</ul>
+<p>2.2 <code>gaussian_diffusion.py</code>——采样过程代码</p>
+<p>（1）采用<strong>DDPM采样方法</strong>时，<code>sample_fn()</code>即<code>p_sample_loop()</code>,该方法通过<code>p_sample_loop_progressive()</code>来循环调用<code>p_sample</code>一步步采样，<code>p_sample</code>进行$p(x_{t-1}|x_t,y)$采样，过程步骤如下：</p>
+<ul>
+<li>得到模型预测的噪声 $\epsilon_\theta(x_t,t,y)$,再计算出均值 $\mu_\theta(x_t)$和方差 $\Sigma(x_t)$；</li>
+<li>加上条件引导，得到新的均值 $\mu=\mu_\theta(x_t)+s\Sigma(x_t)\nabla\log p_\phi(y|x_t)$；</li>
+<li>重参数技巧，从高斯分布中采样z，再得到<code>sample</code>：$x_{t-1}=\mu+\Sigma z$.</li>
+</ul>
+<div class="highlight line-number"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">p_sample</span>(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    self,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    model,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    x,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    t,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    clip_denoised<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    denoised_fn<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    cond_fn<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    model_kwargs<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>    out <span style="color:#555">=</span> self<span style="color:#555">.</span>p_mean_variance( <span style="color:#09f;font-style:italic">#通过模型预测的噪声计算均值与方差</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        model,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        x,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        t,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>        clip_denoised<span style="color:#555">=</span>clip_denoised,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        denoised_fn<span style="color:#555">=</span>denoised_fn,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>        model_kwargs<span style="color:#555">=</span>model_kwargs,)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>    noise <span style="color:#555">=</span> th<span style="color:#555">.</span>randn_like(x)<span style="color:#09f;font-style:italic">#从高斯分布中采样z</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>    nonzero_mask <span style="color:#555">=</span> (
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>        (t <span style="color:#555">!=</span> <span style="color:#f60">0</span>)<span style="color:#555">.</span>float()<span style="color:#555">.</span>view(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#555">*</span>([<span style="color:#f60">1</span>] <span style="color:#555">*</span> (<span style="color:#366">len</span>(x<span style="color:#555">.</span>shape) <span style="color:#555">-</span> <span style="color:#f60">1</span>)))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>    )  <span style="color:#09f;font-style:italic"># no noise when t == 0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>    <span style="color:#069;font-weight:bold">if</span> cond_fn <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>        out[<span style="color:#c30">&#34;mean&#34;</span>] <span style="color:#555">=</span> self<span style="color:#555">.</span>condition_mean(<span style="color:#09f;font-style:italic">#计算加入引导的新均值</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>            cond_fn, out, x, t, model_kwargs<span style="color:#555">=</span>model_kwargs)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>    <span style="color:#09f;font-style:italic">#重参数采样技巧</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>    sample <span style="color:#555">=</span> out[<span style="color:#c30">&#34;mean&#34;</span>] <span style="color:#555">+</span> nonzero_mask <span style="color:#555">*</span> th<span style="color:#555">.</span>exp(<span style="color:#f60">0.5</span> <span style="color:#555">*</span> out[<span style="color:#c30">&#34;log_variance&#34;</span>]) <span style="color:#555">*</span> noise
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>    <span style="color:#069;font-weight:bold">return</span> {<span style="color:#c30">&#34;sample&#34;</span>: sample, <span style="color:#c30">&#34;pred_xstart&#34;</span>: out[<span style="color:#c30">&#34;pred_xstart&#34;</span>]}
+</span></span></code></pre></div><p>调用<code>condition_mean</code>来计算加入引导后的均值：</p>
+<div class="highlight line-number"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">condition_mean</span>(self, cond_fn, p_mean_var, x, t, model_kwargs<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    gradient <span style="color:#555">=</span> cond_fn(x, self<span style="color:#555">.</span>_scale_timesteps(t), <span style="color:#555">**</span>model_kwargs)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    new_mean <span style="color:#555">=</span> (
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>        p_mean_var[<span style="color:#c30">&#34;mean&#34;</span>]<span style="color:#555">.</span>float() <span style="color:#555">+</span> p_mean_var[<span style="color:#c30">&#34;variance&#34;</span>] <span style="color:#555">*</span> gradient<span style="color:#555">.</span>float()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    )<span style="color:#09f;font-style:italic">#重新计算均值</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>    <span style="color:#069;font-weight:bold">return</span> new_mean
+</span></span></code></pre></div><p>（2）采用<strong>DDIM采样方法</strong>
+<code>sample_fn()</code>即<code>ddim_sample_loop</code>,该方法通过<code>ddim_sample_loop_progressive</code>来循环调用<code>ddim_sample</code>进行采样，<code>p_sample</code>方法实现 $p(x_{t-1}|x_t,x_0,y)$ 过程，采样步骤如下：</p>
+<ul>
+<li>得到模型预测的噪声 $\epsilon_\theta(x_t)$;</li>
+<li>加入梯度引导后得到新的噪声 $\hat{\epsilon}=\epsilon_\theta(x_t)-\sqrt{1-\alpha_t}\nabla\log p_\phi(y|x_t)$;</li>
+<li>得到新的预测的 $\hat{x_0}=\frac{(x_t-\sqrt{
+1-\alpha_t}\hat{\epsilon})}{\sqrt{\alpha_t}}$;</li>
+<li>再由论文中的公式(12)得: $x_{t-1}= \sqrt{\alpha_{t-1}}x_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2}\epsilon_\theta(x_t)+\sigma_t\epsilon_t$，在DDIM中，有$\sigma=0$，故公式化简为 $x_{t-1}= \sqrt{\alpha_{t-1}}\hat{x_0}+\sqrt{1-\alpha_{t-1}}\epsilon_\theta(x_t)$.</li>
+</ul>
+<p>代码如下：</p>
+<div class="highlight line-number"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">ddim_sample</span>(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>        self,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        model,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>        x,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        t,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        clip_denoised<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        denoised_fn<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        cond_fn<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        model_kwargs<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>        eta<span style="color:#555">=</span><span style="color:#f60">0.0</span>,):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>    out <span style="color:#555">=</span> self<span style="color:#555">.</span>p_mean_variance(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>        model,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>        x,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>        t,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>        clip_denoised<span style="color:#555">=</span>clip_denoised,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>        denoised_fn<span style="color:#555">=</span>denoised_fn,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>        model_kwargs<span style="color:#555">=</span>model_kwargs,)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>    <span style="color:#069;font-weight:bold">if</span> cond_fn <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>        out <span style="color:#555">=</span> self<span style="color:#555">.</span>condition_score(cond_fn, out, x, t, model_kwargs<span style="color:#555">=</span>model_kwargs)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>    eps <span style="color:#555">=</span> self<span style="color:#555">.</span>_predict_eps_from_xstart(x, t, out[<span style="color:#c30">&#34;pred_xstart&#34;</span>])<span style="color:#09f;font-style:italic">#预测的噪声与x0可以互相转化</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>    alpha_bar <span style="color:#555">=</span> _extract_into_tensor(self<span style="color:#555">.</span>alphas_cumprod, t, x<span style="color:#555">.</span>shape)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>    alpha_bar_prev <span style="color:#555">=</span> _extract_into_tensor(self<span style="color:#555">.</span>alphas_cumprod_prev, t, x<span style="color:#555">.</span>shape)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>    <span style="color:#09f;font-style:italic">#eta=0.0，sigma实际在DDIM中为0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>    sigma <span style="color:#555">=</span> (eta <span style="color:#555">*</span> th<span style="color:#555">.</span>sqrt((<span style="color:#f60">1</span> <span style="color:#555">-</span> alpha_bar_prev) <span style="color:#555">/</span> (<span style="color:#f60">1</span> <span style="color:#555">-</span> alpha_bar))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>        <span style="color:#555">*</span> th<span style="color:#555">.</span>sqrt(<span style="color:#f60">1</span> <span style="color:#555">-</span> alpha_bar <span style="color:#555">/</span> alpha_bar_prev))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>    <span style="color:#09f;font-style:italic"># Equation 12.</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>    noise <span style="color:#555">=</span> th<span style="color:#555">.</span>randn_like(x)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>    mean_pred <span style="color:#555">=</span> (
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>        out[<span style="color:#c30">&#34;pred_xstart&#34;</span>] <span style="color:#555">*</span> th<span style="color:#555">.</span>sqrt(alpha_bar_prev)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>        <span style="color:#555">+</span> th<span style="color:#555">.</span>sqrt(<span style="color:#f60">1</span> <span style="color:#555">-</span> alpha_bar_prev <span style="color:#555">-</span> sigma <span style="color:#555">**</span> <span style="color:#f60">2</span>) <span style="color:#555">*</span> eps
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span>    )
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>    nonzero_mask <span style="color:#555">=</span> (
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>        (t <span style="color:#555">!=</span> <span style="color:#f60">0</span>)<span style="color:#555">.</span>float()<span style="color:#555">.</span>view(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#555">*</span>([<span style="color:#f60">1</span>] <span style="color:#555">*</span> (<span style="color:#366">len</span>(x<span style="color:#555">.</span>shape) <span style="color:#555">-</span> <span style="color:#f60">1</span>)))
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>    )  <span style="color:#09f;font-style:italic"># no noise when t == 0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span>    sample <span style="color:#555">=</span> mean_pred <span style="color:#555">+</span> nonzero_mask <span style="color:#555">*</span> sigma <span style="color:#555">*</span> noise
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span><span>    <span style="color:#069;font-weight:bold">return</span> {<span style="color:#c30">&#34;sample&#34;</span>: sample, <span style="color:#c30">&#34;pred_xstart&#34;</span>: out[<span style="color:#c30">&#34;pred_xstart&#34;</span>]}
+</span></span></code></pre></div><p>调用<code>condition_score</code>来计算加入引导后的噪声与与预测图像 $x_0$:</p>
+<div class="highlight line-number"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">condition_score</span>(self, cond_fn, p_mean_var, x, t, model_kwargs<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    alpha_bar <span style="color:#555">=</span> _extract_into_tensor(self<span style="color:#555">.</span>alphas_cumprod, t, x<span style="color:#555">.</span>shape)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    eps <span style="color:#555">=</span> self<span style="color:#555">.</span>_predict_eps_from_xstart(x, t, p_mean_var[<span style="color:#c30">&#34;pred_xstart&#34;</span>])
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    eps <span style="color:#555">=</span> eps <span style="color:#555">-</span> (<span style="color:#f60">1</span> <span style="color:#555">-</span> alpha_bar)<span style="color:#555">.</span>sqrt() <span style="color:#555">*</span> cond_fn(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        x, self<span style="color:#555">.</span>_scale_timesteps(t), <span style="color:#555">**</span>model_kwargs)<span style="color:#09f;font-style:italic">#加入引导梯度后的噪声</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    out <span style="color:#555">=</span> p_mean_var<span style="color:#555">.</span>copy()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    out[<span style="color:#c30">&#34;pred_xstart&#34;</span>] <span style="color:#555">=</span> self<span style="color:#555">.</span>_predict_xstart_from_eps(x, t, eps)<span style="color:#09f;font-style:italic">#重新计算x0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    out[<span style="color:#c30">&#34;mean&#34;</span>], _, _ <span style="color:#555">=</span> self<span style="color:#555">.</span>q_posterior_mean_variance(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        x_start<span style="color:#555">=</span>out[<span style="color:#c30">&#34;pred_xstart&#34;</span>], x_t<span style="color:#555">=</span>x, t<span style="color:#555">=</span>t
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>    )
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>    <span style="color:#069;font-weight:bold">return</span> out
+</span></span></code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-tags">
+              <a href="/tags/ddpm/">
+                DDPM
+              </a>
+            </div>
+            
+            <div class="post-tags">
+              <a href="/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/">
+                扩散模型
+              </a>
+            </div>
+            
+            <div class="post-tags">
+              <a href="/tags/%E4%BB%A3%E7%A0%81%E7%90%86%E8%A7%A3/">
+                代码理解
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
+          </div>
+
+          
+
+<div class="related-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/study/ddpm%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/">DDPM基础代码解析</a></li>
+    
+    <li><a href="/posts/study/ddpm%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/">DDPM代码详解</a></li>
+    
+    <li><a href="/posts/study/ddim%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">DDIM论文理解</a></li>
+    
+  </ul>
+</div>
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

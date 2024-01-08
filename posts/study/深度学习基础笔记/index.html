@@ -284,7 +284,13 @@ TensorFlow：缺省NHWC，GPU也支持NCHW Caffe：NCHW PyTorch：NCHW 三、小
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>    <span style="color:#366">print</span>(i)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span><span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>    main()
-</span></span></code></pre></div><h3 id="六dropout方法">六、dropout方法</h3>
+</span></span></code></pre></div><h3 id="六python中的yield用法">六、Python中的yield用法</h3>
+<p>如果不太好理解yield，可以先把yield当作return的同胞兄弟来看，他们都在函数中使用，并履行着返回某种结果的职责。</p>
+<p>这两者的区别是：</p>
+<ul>
+<li>有return的函数直接返回所有结果，程序终止不再运行，并销毁局部变量；</li>
+<li>yield的函数则返回一个可迭代的 generator（生成器）对象，可以使用for循环或者调用next()方法遍历生成器对象来提取结果。</li>
+</ul>
 
         </div>
 
