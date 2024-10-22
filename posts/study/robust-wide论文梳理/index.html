@@ -119,7 +119,7 @@ code.has-jax {
       "articleSection" : "posts",
       "name" : "Robust-Wide论文梳理",
       "headline" : "Robust-Wide论文梳理",
-      "description" : "Robust-Wide: Robust Watermarking against Instruction-driven Image Editing 笔记 一、文章简介 论文链接：Robust-Wide: Robust Watermarking against Instruction-driven Image Editing\n文章来源： ECCV 文章年份： 2024\n核心思路： 引入一种新颖的部分指令驱动的去噪采样指导（PIDSG）模块，该模块由多种指令注入和不同语义级别的图像的大量修改组成。通过 PIDSG，编码器倾向于将水印嵌入到更鲁棒和语义感知的区域中，即使在严格的图像编辑之后，水印仍然存在，从而实现针对语义失真的鲁棒性。\n二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=\\mathbb{E}{x,\\epsilon\\sim\\mathcal{N}(0,1),t}\\bigg[|\\epsilon-\\epsilon\\theta(x_t,t)|2^2\\bigg]$$ 其中，$x$是输入图像，$\\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\\epsilon{\\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。\n潜在空间LDM的目标函数： $$L_{LDM}=\\mathbb{E}{\\mathcal{E}(x),\\epsilon\\sim\\mathcal{N}(0,1),t}\\Big[|\\epsilon-\\epsilon\\theta(z_t,t)|_2^2\\Big]$$ LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。\n2.2 基于扩散模型的指令驱动的图像编辑 （1） InstructPix2Pix\nInstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入\/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=\\mathbb{E}{\\mathcal{E}(x),\\mathcal{E}(c_I),c_T,\\epsilon\\sim\\mathcal{N}(0,1),t}\\bigg[|\\epsilon-\\epsilon\\theta(z_t,t,\\mathcal{E}(c_I),c_T)|_2^2\\bigg]$$ （2）ControlNet-InstructPix2Pix\nControlNet是一个控制预训练图像扩散模型（例如 Stable Diffusion）的神经网络。它允许输入调节图像，然后使用该调节图像来操控图像生成。可以将原始图像视为空间条件控制，在InstructPix2Pix数据集上训练ControlNet，以实现指令驱动的图像编辑，称为ControlNet-InstructPix2Pix。\n（3） 改进InstructPix2Pix\nHIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间的不一致问题，从而改进了 InstructPix2Pix。MagicBrush 引入了第一个大规模的手动注释数据集，用于指令引导的真实图像编辑，并在数据集上微调InstructPix2Pix以获得更好的性能。MGIE使用多模态大语言模型来导出表达指令并提供显式指导，在保持效率的同时进一步提高了编辑性能。\n此外，还有一些流行的文本驱动的图像编辑方法，例如 Inpainting 和 DDIM Inversion 。Inpainting 通过屏蔽图像的某些区域来编辑图像，然后根据给定的文本重新生成图像。 DDIM Inversion 以原始文本标题为条件执行反向 DDIM 采样过程，将图像转换为其部分噪声版本。然后，通过给定编辑后的文本标题对噪声图像进行去噪来获取编辑后的图像。",
+      "description" : "Robust-Wide: Robust Watermarking against Instruction-driven Image Editing 笔记 一、文章简介 论文链接：Robust-Wide: Robust Watermarking against Instruction-driven Image Editing\n文章来源： ECCV 文章年份： 2024\n核心思路： 引入一种新颖的部分指令驱动的去噪采样指导（PIDSG）模块，该模块由多种指令注入和不同语义级别的图像的大量修改组成。通过 PIDSG，编码器倾向于将水印嵌入到更鲁棒和语义感知的区域中，即使在严格的图像编辑之后，水印仍然存在，从而实现针对语义失真的鲁棒性。\n二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=E_{x,\\epsilon\\sim\\mathcal{N}(0,1),t}\\bigg[|\\epsilon-\\epsilon_\\theta(x_t,t)|_2^2\\bigg]$$\n其中，$x$是输入图像，$\\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\\epsilon_{\\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。\n潜在空间LDM的目标函数： $$L_{LDM}=E_{\\mathcal{E}(x),\\epsilon\\sim\\mathcal{N}(0,1),t}\\Big[|\\epsilon-\\epsilon_\\theta(z_t,t)|_2^2\\Big]$$\nLDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。\n2.2 基于扩散模型的指令驱动的图像编辑 （1） InstructPix2Pix\nInstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入\/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=E_{\\mathcal{E}(x),\\mathcal{E}(c_I),c_T,\\epsilon\\sim\\mathcal{N}(0,1),t}\\bigg[|\\epsilon-\\epsilon_\\theta(z_t,t,\\mathcal{E}(c_I),c_T)|_2^2\\bigg]$$ （2）ControlNet-InstructPix2Pix\nControlNet是一个控制预训练图像扩散模型（例如 Stable Diffusion）的神经网络。它允许输入调节图像，然后使用该调节图像来操控图像生成。可以将原始图像视为空间条件控制，在InstructPix2Pix数据集上训练ControlNet，以实现指令驱动的图像编辑，称为ControlNet-InstructPix2Pix。\n（3） 改进InstructPix2Pix\nHIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间的不一致问题，从而改进了 InstructPix2Pix。MagicBrush 引入了第一个大规模的手动注释数据集，用于指令引导的真实图像编辑，并在数据集上微调InstructPix2Pix以获得更好的性能。MGIE使用多模态大语言模型来导出表达指令并提供显式指导，在保持效率的同时进一步提高了编辑性能。\n此外，还有一些流行的文本驱动的图像编辑方法，例如 Inpainting 和 DDIM Inversion 。Inpainting 通过屏蔽图像的某些区域来编辑图像，然后根据给定的文本重新生成图像。 DDIM Inversion 以原始文本标题为条件执行反向 DDIM 采样过程，将图像转换为其部分噪声版本。然后，通过给定编辑后的文本标题对噪声图像进行去噪来获取编辑后的图像。",
       "inLanguage" : "en-US",
       "author" : "Advance",
       "creator" : "Advance",
@@ -139,10 +139,12 @@ code.has-jax {
   <meta property="og:description" content="Robust-Wide: Robust Watermarking against Instruction-driven Image Editing 笔记 一、文章简介 论文链接：Robust-Wide: Robust Watermarking against Instruction-driven Image Editing
 文章来源： ECCV 文章年份： 2024
 核心思路： 引入一种新颖的部分指令驱动的去噪采样指导（PIDSG）模块，该模块由多种指令注入和不同语义级别的图像的大量修改组成。通过 PIDSG，编码器倾向于将水印嵌入到更鲁棒和语义感知的区域中，即使在严格的图像编辑之后，水印仍然存在，从而实现针对语义失真的鲁棒性。
-二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=\mathbb{E}{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon\theta(x_t,t)|2^2\bigg]$$ 其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。
-潜在空间LDM的目标函数： $$L_{LDM}=\mathbb{E}{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon\theta(z_t,t)|_2^2\Big]$$ LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。
+二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=E_{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(x_t,t)|_2^2\bigg]$$
+其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon_{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。
+潜在空间LDM的目标函数： $$L_{LDM}=E_{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon_\theta(z_t,t)|_2^2\Big]$$
+LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。
 2.2 基于扩散模型的指令驱动的图像编辑 （1） InstructPix2Pix
-InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=\mathbb{E}{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$ （2）ControlNet-InstructPix2Pix
+InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=E_{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$ （2）ControlNet-InstructPix2Pix
 ControlNet是一个控制预训练图像扩散模型（例如 Stable Diffusion）的神经网络。它允许输入调节图像，然后使用该调节图像来操控图像生成。可以将原始图像视为空间条件控制，在InstructPix2Pix数据集上训练ControlNet，以实现指令驱动的图像编辑，称为ControlNet-InstructPix2Pix。
 （3） 改进InstructPix2Pix
 HIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间的不一致问题，从而改进了 InstructPix2Pix。MagicBrush 引入了第一个大规模的手动注释数据集，用于指令引导的真实图像编辑，并在数据集上微调InstructPix2Pix以获得更好的性能。MGIE使用多模态大语言模型来导出表达指令并提供显式指导，在保持效率的同时进一步提高了编辑性能。
@@ -150,10 +152,12 @@ HIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间
   <meta name="description" content="Robust-Wide: Robust Watermarking against Instruction-driven Image Editing 笔记 一、文章简介 论文链接：Robust-Wide: Robust Watermarking against Instruction-driven Image Editing
 文章来源： ECCV 文章年份： 2024
 核心思路： 引入一种新颖的部分指令驱动的去噪采样指导（PIDSG）模块，该模块由多种指令注入和不同语义级别的图像的大量修改组成。通过 PIDSG，编码器倾向于将水印嵌入到更鲁棒和语义感知的区域中，即使在严格的图像编辑之后，水印仍然存在，从而实现针对语义失真的鲁棒性。
-二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=\mathbb{E}{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon\theta(x_t,t)|2^2\bigg]$$ 其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。
-潜在空间LDM的目标函数： $$L_{LDM}=\mathbb{E}{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon\theta(z_t,t)|_2^2\Big]$$ LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。
+二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=E_{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(x_t,t)|_2^2\bigg]$$
+其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon_{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。
+潜在空间LDM的目标函数： $$L_{LDM}=E_{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon_\theta(z_t,t)|_2^2\Big]$$
+LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。
 2.2 基于扩散模型的指令驱动的图像编辑 （1） InstructPix2Pix
-InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=\mathbb{E}{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$ （2）ControlNet-InstructPix2Pix
+InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=E_{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$ （2）ControlNet-InstructPix2Pix
 ControlNet是一个控制预训练图像扩散模型（例如 Stable Diffusion）的神经网络。它允许输入调节图像，然后使用该调节图像来操控图像生成。可以将原始图像视为空间条件控制，在InstructPix2Pix数据集上训练ControlNet，以实现指令驱动的图像编辑，称为ControlNet-InstructPix2Pix。
 （3） 改进InstructPix2Pix
 HIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间的不一致问题，从而改进了 InstructPix2Pix。MagicBrush 引入了第一个大规模的手动注释数据集，用于指令引导的真实图像编辑，并在数据集上微调InstructPix2Pix以获得更好的性能。MGIE使用多模态大语言模型来导出表达指令并提供显式指导，在保持效率的同时进一步提高了编辑性能。
@@ -192,20 +196,20 @@ HIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间
 <h2 id="二背景知识">二、背景知识</h2>
 <h3 id="21-扩散模型">2.1 扩散模型</h3>
 <p>  经典DDPM的目标函数：
-$$L_{DM}=\mathbb{E}<em>{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon</em>\theta(x_t,t)|<em>2^2\bigg]$$
-  其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon</em>{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。</p>
+$$L_{DM}=E_{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(x_t,t)|_2^2\bigg]$$</p>
+<p>  其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon_{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。</p>
 <p>  潜在空间LDM的目标函数：
-$$L_{LDM}=\mathbb{E}<em>{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon</em>\theta(z_t,t)|_2^2\Big]$$
-  LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。</p>
+$$L_{LDM}=E_{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon_\theta(z_t,t)|_2^2\Big]$$</p>
+<p>  LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。</p>
 <h3 id="22-基于扩散模型的指令驱动的图像编辑">2.2 基于扩散模型的指令驱动的图像编辑</h3>
 <p>  <strong>（1） InstructPix2Pix</strong></p>
 <p>  InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 <strong>源图像、编辑指令和后续编辑的图像。</strong> 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下:
-$$L=\mathbb{E}<em>{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon</em>\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$
+$$L=E_{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$
   <strong>（2）ControlNet-InstructPix2Pix</strong></p>
 <p>  ControlNet是一个控制预训练图像扩散模型（例如 Stable Diffusion）的神经网络。它允许输入调节图像，然后使用该调节图像来操控图像生成。可以将原始图像视为空间条件控制，在InstructPix2Pix数据集上训练ControlNet，以实现指令驱动的图像编辑，称为ControlNet-InstructPix2Pix。</p>
 <p>  <strong>（3） 改进InstructPix2Pix</strong></p>
 <p>  HIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间的不一致问题，从而改进了 InstructPix2Pix。MagicBrush 引入了第一个大规模的手动注释数据集，用于指令引导的真实图像编辑，并在数据集上微调InstructPix2Pix以获得更好的性能。MGIE使用多模态大语言模型来导出表达指令并提供显式指导，在保持效率的同时进一步提高了编辑性能。</p>
-<p>此外，还有一些流行的文本驱动的图像编辑方法，例如 Inpainting 和 DDIM Inversion 。Inpainting 通过屏蔽图像的某些区域来编辑图像，然后根据给定的文本重新生成图像。 DDIM Inversion 以原始文本标题为条件执行反向 DDIM 采样过程，将图像转换为其部分噪声版本。然后，通过给定编辑后的文本标题对噪声图像进行去噪来获取编辑后的图像。</p>
+<p>  此外，还有一些流行的文本驱动的图像编辑方法，例如 Inpainting 和 DDIM Inversion 。Inpainting 通过屏蔽图像的某些区域来编辑图像，然后根据给定的文本重新生成图像。 DDIM Inversion 以原始文本标题为条件执行反向 DDIM 采样过程，将图像转换为其部分噪声版本。然后，通过给定编辑后的文本标题对噪声图像进行去噪来获取编辑后的图像。</p>
 <h3 id="23-鲁棒水印">2.3 鲁棒水印</h3>
 <p>  介绍了无论是传统的鲁棒水印还是最先进的水印方法，它们在指令驱动的图像编辑的情况下都是无效的。</p>
 <h2 id="三方法实现">三、方法实现</h2>
@@ -214,7 +218,7 @@ $$L=\mathbb{E}<em>{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0
 <img src="/img/Robust-wide/%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="图片1">
   通过联合训练水印嵌入网络 $E_m$ 和提取网络 $E_x$ 来分别实现水印的嵌入与提取，同时集成了一种新的部分指令驱动的去噪采样引导（PIDSG）模块，以增强水印针对指令驱动的图像编辑的鲁棒性。</p>
 <h3 id="32-水印嵌入">3.2 水印嵌入</h3>
-<p>  引入嵌入网络 $E_m$ ，从原始图像 $I_{ori}$ 生成水印图像 $I_{wm}$，其中水印是随机 $L$ 位信息 $m \in \big{0, 1\big}^L$。 具体来说，采用U-Net作为 $E_m$ 的结构。要使 $m$ 与 $I_{ori}$ 的维度匹配，$E_m$ 使用一些转置卷积层将 $1 × √L × √L$ 形状的 $m$ 转换为 $C × H × W$ 形状，其中 $C$ 是预定义的特征通道， $H$ 和 $W$ 是 $I_{ori}$ 的高度和宽度。然后，将转化后的水印信息与 $I_{ori}$ 连接起来。为保留图像的编辑功能，$I_{wm}$ 应该在视觉上与 $I_{ori}$ 保持一致。下面是在像素级别计算 $I_{ori}$ 和$I_{wm}$之间的 $L_2$ 距离：
+<p>  引入嵌入网络 $E_m$ ，从原始图像 $I_{ori}$ 生成水印图像 $I_{wm}$，其中水印是随机 $L$ 位信息 $m \in {(0, 1 )}^L$。 具体来说，采用U-Net作为 $E_m$ 的结构。要使 $m$ 与 $I_{ori}$ 的维度匹配，$E_m$ 使用一些转置卷积层将 $1 × √L × √L$ 形状的 $m$ 转换为 $C × H × W$ 形状，其中 $C$ 是预定义的特征通道， $H$ 和 $W$ 是 $I_{ori}$ 的高度和宽度。然后，将转化后的水印信息与 $I_{ori}$ 连接起来。为保留图像的编辑功能，$I_{wm}$ 应该在视觉上与 $I_{ori}$ 保持一致。下面是在像素级别计算 $I_{ori}$ 和$I_{wm}$之间的 $L_2$ 距离：
 $$L_{em_1}=L_2(I_{ori},I_{wm})=L_2(I_{ori},E_m(I_{ori},m))$$</p>
 <p>此外，在特征空间中的 $I_{ori}$ 和 $I_{wm}$ 之间也存在距离约束，由InstructPix2Pix中VAE的编码器 $\mathcal{E}$ 表示，即:
 $$L_{em_2}=L_2(Z_{ori},Z_{wm})=L_2(\mathcal{E}(I_{ori}),\mathcal{E}(I_{wm}))$$</p>
@@ -313,7 +317,7 @@ $$L_{total}=L_{em_1}+\lambda_1L_{em_2}+\lambda_2L_{ex_1}+\lambda_3L_{ex_2}$$
 <p>  <strong>表6：</strong></p>
 <p><img src="/img/Robust-wide/%E8%A1%A86.png" alt="表6"></p>
 <p>  <strong>（3）梯度后退步数 k 的影响：</strong> 表 7 显示了不同数量的梯度后向步数 k 的水印性能。步骤越多，水印消息就越容易提取，但水印图像的视觉质量略有下降。由于 GPU 内存限制，可以设置的最大梯度后向步数为 3，这足以获得可接受的性能。</p>
-<p>  <strong>表7</strong></p>
+<p>  <strong>表7:</strong></p>
 <p><img src="/img/Robust-wide/%E8%A1%A87.png" alt="表7"></p>
 <p>  <strong>（4）不同水印位长度的影响：</strong> 表7还显示了不同长度的水印消息的评估结果。较长的水印消息会导致较高的 BER 和较低的视觉质量。实际上，用户可以选择水印长度来平衡。在表7中，可以观察到，与水印长度为64时相比，当水印长度为16时，视觉质量较低。事实上，水印位与图像的集成涉及通过卷积或反卷积层的形状变换。对于 16 位，我们可用的 GPU 内存对使用卷积或反卷积层进行形状变换造成了限制。因此，我们选择了非参数插值方法来处理积分，导致视觉质量下降。</p>
 <h2 id="五结论">五、结论</h2>

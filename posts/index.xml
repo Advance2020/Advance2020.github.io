@@ -16,10 +16,12 @@
       <description>Robust-Wide: Robust Watermarking against Instruction-driven Image Editing 笔记 一、文章简介 论文链接：Robust-Wide: Robust Watermarking against Instruction-driven Image Editing
 文章来源： ECCV 文章年份： 2024
 核心思路： 引入一种新颖的部分指令驱动的去噪采样指导（PIDSG）模块，该模块由多种指令注入和不同语义级别的图像的大量修改组成。通过 PIDSG，编码器倾向于将水印嵌入到更鲁棒和语义感知的区域中，即使在严格的图像编辑之后，水印仍然存在，从而实现针对语义失真的鲁棒性。
-二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=\mathbb{E}{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon\theta(x_t,t)|2^2\bigg]$$ 其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。
-潜在空间LDM的目标函数： $$L_{LDM}=\mathbb{E}{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon\theta(z_t,t)|_2^2\Big]$$ LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。
+二、背景知识 2.1 扩散模型 经典DDPM的目标函数： $$L_{DM}=E_{x,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(x_t,t)|_2^2\bigg]$$
+其中，$x$是输入图像，$\epsilon$是随机采样的高斯噪声，$t$是均匀采样的时间步长，$x_t$是$x$在$t$步时的加噪版本，$\epsilon_{\theta}$是扩散模型中用于预测噪声的神经网络。文生图模型如GLIDE、DALL·E2 和 Imagen都是基于 DDPM 的。
+潜在空间LDM的目标函数： $$L_{LDM}=E_{\mathcal{E}(x),\epsilon\sim\mathcal{N}(0,1),t}\Big[|\epsilon-\epsilon_\theta(z_t,t)|_2^2\Big]$$
+LDM在预训练的 VAE 的潜在空间中进行加噪和去噪处理，其中$\mathcal{E}$是VAE的编码器，$z_t$是噪声潜变量。SD是基于LDM的。
 2.2 基于扩散模型的指令驱动的图像编辑 （1） InstructPix2Pix
-InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=\mathbb{E}{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$ （2）ControlNet-InstructPix2Pix
+InstructPix2Pix在前向过程直接进行图像编辑，无需额外样例图、对输入/输出图的描述或逐样本finetune。它以端到端的方式进行训练，数据集由 GPT-3 和 Prompt2Prompt 生成，数据集中的每个项目都包含 源图像、编辑指令和后续编辑的图像。 在训练过程中，图像和指令分别被视为条件 $c_I$ 和 $c_T$ ，而编辑后的图像是真实输出。因此，训练目标如下: $$L=E_{\mathcal{E}(x),\mathcal{E}(c_I),c_T,\epsilon\sim\mathcal{N}(0,1),t}\bigg[|\epsilon-\epsilon_\theta(z_t,t,\mathcal{E}(c_I),c_T)|_2^2\bigg]$$ （2）ControlNet-InstructPix2Pix
 ControlNet是一个控制预训练图像扩散模型（例如 Stable Diffusion）的神经网络。它允许输入调节图像，然后使用该调节图像来操控图像生成。可以将原始图像视为空间条件控制，在InstructPix2Pix数据集上训练ControlNet，以实现指令驱动的图像编辑，称为ControlNet-InstructPix2Pix。
 （3） 改进InstructPix2Pix
 HIVE 通过利用人类反馈来解决编辑指令和生成的编辑图像之间的不一致问题，从而改进了 InstructPix2Pix。MagicBrush 引入了第一个大规模的手动注释数据集，用于指令引导的真实图像编辑，并在数据集上微调InstructPix2Pix以获得更好的性能。MGIE使用多模态大语言模型来导出表达指令并提供显式指导，在保持效率的同时进一步提高了编辑性能。
